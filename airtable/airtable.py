@@ -11,6 +11,22 @@ class IsNotInteger(Exception):
 class IsNotString(Exception):
     pass
 
+def checkInteger(n):
+    if not n:
+        return
+    elif not isinstance(n, int):
+        raise IsNotInteger('Expected an integer')
+    else:
+        return True
+
+def checkString(s):
+    if not s:
+        return
+    elif not isinstance(s, str):
+        raise IsNotString('Expected a string')
+    else:
+        return True
+
 class Airtable():
     def __init__(self, base_id, api_key):
         self.airtable_url = API_URL % API_VERSION
@@ -23,7 +39,6 @@ class Airtable():
                              params=params,
                              data=json.dumps(payload),
                              headers=self.headers)
-        print r.request.headers
         if r.status_code == requests.codes.ok:
             return r.json()
         else:
@@ -31,20 +46,17 @@ class Airtable():
 
     def get(self, table_name, id=None, limit=0, offset=None):
         params = {}
-        if id:
+        if checkString(id):
             url = os.path.join(table_name, id)
         else:
             url = table_name
-            if limit:
-                if not isinstance(limit, int):
-                    raise IsNotInteger('Limit is not an integer')
+            if limit and checkInteger(limit):
                 params.update({'limit': limit})
-            if offset:
-                if not isinstance(offset, str):
-                    raise IsNotString('Offset is not a string')
+            if offset and checkString(offset):
                 params.update({'offset': offset})
         return self.__request('GET', url, params)
 
     def delete(self, table_name, id):
-        url = os.path.join(table_name, id)
-        return self.__request('DELETE', url)
+        if checkString(table_name) and checkString(id):
+            url = os.path.join(table_name, id)
+            return self.__request('DELETE', url)
