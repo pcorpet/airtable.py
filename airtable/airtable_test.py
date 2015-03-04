@@ -7,6 +7,7 @@ FAKE_TABLE_NAME = 'TableName'
 FAKE_BASE_ID = 'app12345'
 FAKE_API_KEY = 'fake_api_key'
 
+
 class TestAirtable(unittest.TestCase):
     def setUp(self):
         self.base_id = FAKE_BASE_ID
@@ -20,23 +21,6 @@ class TestAirtable(unittest.TestCase):
     def test_build_headers(self):
         self.assertEqual(self.airtable.headers['Authorization'],
                          'Bearer fake_api_key')
-
-    @mock.patch.object(requests, 'request')
-    def test_delete(self, mock_request):
-        mock_response = mock.MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            'deleted': True,
-            'id': '1234'
-        }
-        mock_request.return_value = mock_response
-        r = self.airtable.delete(FAKE_TABLE_NAME, '1234')
-        self.assertTrue(r['deleted'])
-        self.assertEqual(r['id'], '1234')
-
-    def test_invalid_delete(self):
-        with self.assertRaises(airtable.IsNotString):
-            self.airtable.delete(FAKE_TABLE_NAME, 123)
 
     @mock.patch.object(requests, 'request')
     def test_get_all(self, mock_request):
@@ -88,7 +72,7 @@ class TestAirtable(unittest.TestCase):
         mock_response.status_code = 404
         mock_request.return_value = mock_response
         r = self.airtable.get(FAKE_TABLE_NAME, '123')
-        self.assertEqual(r['error'], 404)
+        self.assertEqual(r['error']['code'], 404)
     
     def test_invalid_get(self):
         with self.assertRaises(airtable.IsNotString):
@@ -96,6 +80,23 @@ class TestAirtable(unittest.TestCase):
             self.airtable.get(FAKE_TABLE_NAME, offset=123)
         with self.assertRaises(airtable.IsNotInteger):
             self.airtable.get(FAKE_TABLE_NAME, limit='1')
+
+    @mock.patch.object(requests, 'request')
+    def test_delete(self, mock_request):
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'deleted': True,
+            'id': '1234'
+        }
+        mock_request.return_value = mock_response
+        r = self.airtable.delete(FAKE_TABLE_NAME, '1234')
+        self.assertTrue(r['deleted'])
+        self.assertEqual(r['id'], '1234')
+
+    def test_invalid_delete(self):
+        with self.assertRaises(airtable.IsNotString):
+            self.airtable.delete(FAKE_TABLE_NAME, 123)
 
 if __name__ == '__main__':
     unittest.main()
