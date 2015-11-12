@@ -51,6 +51,59 @@ class TestAirtable(unittest.TestCase):
         self.assertEqual(r['offset'], 'reccg3Kke0QvTDW0H')
 
     @mock.patch.object(requests, 'request')
+    def test_order_of_fields_is_preserved(self, mock_request):
+        mock_response = requests.Response()
+        mock_response.status_code = 200
+
+        # Set the text content of the response to a JSON string so we can test
+        # how it gets deserialized
+        mock_response._content = '''{
+            "records": [
+                {
+                    "id": "reccA6yaHKzw5Zlp0",
+                    "fields": {
+                        "a": 1,
+                        "b": 2,
+                        "c": 3,
+                        "d": 4,
+                        "e": 5,
+                        "f": 6,
+                        "g": 7,
+                        "h": 8,
+                        "i": 9,
+                        "j": 10,
+                        "k": 11,
+                        "l": 12,
+                        "m": 13
+                    }
+                },
+                {
+                    "id": "reccg3Kke0QvTDW0H",
+                    "fields": {
+                        "n": 14,
+                        "o": 15,
+                        "p": 16,
+                        "q": 17,
+                        "r": 18,
+                        "s": 19,
+                        "t": 20,
+                        "u": 21,
+                        "v": 22,
+                        "w": 23,
+                        "x": 24,
+                        "y": 25,
+                        "z": 26
+                    }
+                }
+            ]
+        }'''
+
+        mock_request.return_value = mock_response
+        r = self.airtable.get(FAKE_TABLE_NAME)
+        self.assertEqual(r['records'][0]['fields'].keys(), list(u'abcdefghijklm'))
+        self.assertEqual(r['records'][1]['fields'].keys(), list(u'nopqrstuvwxyz'))
+
+    @mock.patch.object(requests, 'request')
     def test_get_by_id(self, mock_request):
         fake_id = 'reccA6yaHKzw5Zlp0'
         mock_response = mock.MagicMock()

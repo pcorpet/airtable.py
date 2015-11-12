@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 import os
 import requests
@@ -51,7 +52,7 @@ class Airtable():
                              data=payload,
                              headers=self.headers)
         if r.status_code == requests.codes.ok:
-            return r.json()
+            return r.json(object_pairs_hook=OrderedDict)
         else:
             try:
                 message = None
