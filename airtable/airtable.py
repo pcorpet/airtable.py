@@ -37,7 +37,7 @@ def create_payload(data):
     return {'fields': data}
 
 
-class Airtable():
+class Airtable:
     def __init__(self, base_id, api_key):
         self.airtable_url = API_URL % API_VERSION
         self.base_url = os.path.join(self.airtable_url, base_id)
