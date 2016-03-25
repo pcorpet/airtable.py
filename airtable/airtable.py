@@ -1,7 +1,5 @@
+import os, json, requests
 from collections import OrderedDict
-import json
-import os
-import requests
 
 API_URL = 'https://api.airtable.com/v%s/'
 API_VERSION = '0'

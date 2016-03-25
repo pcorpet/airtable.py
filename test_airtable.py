@@ -1,4 +1,5 @@
-import airtable
+from airtable.airtable import Airtable
+from airtable import airtable
 import mock
 import requests
 import unittest
@@ -12,7 +13,7 @@ class TestAirtable(unittest.TestCase):
     def setUp(self):
         self.base_id = FAKE_BASE_ID
         self.api_key = FAKE_API_KEY
-        self.airtable = airtable.Airtable(self.base_id, self.api_key)
+        self.airtable = Airtable(self.base_id, self.api_key)
 
     def test_build_base_url(self):
         self.assertEqual(self.airtable.base_url,
@@ -126,7 +127,7 @@ class TestAirtable(unittest.TestCase):
         mock_request.return_value = mock_response
         r = self.airtable.get(FAKE_TABLE_NAME, '123')
         self.assertEqual(r['error']['code'], 404)
-    
+
     def test_invalid_get(self):
         with self.assertRaises(airtable.IsNotString):
             self.airtable.get(FAKE_TABLE_NAME, 123)
