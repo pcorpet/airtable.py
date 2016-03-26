@@ -1,7 +1,5 @@
+import os, json, requests
 from collections import OrderedDict
-import json
-import os
-import requests
 
 API_URL = 'https://api.airtable.com/v%s/'
 API_VERSION = '0'
@@ -37,7 +35,7 @@ def create_payload(data):
     return {'fields': data}
 
 
-class Airtable():
+class Airtable:
     def __init__(self, base_id, api_key):
         self.airtable_url = API_URL % API_VERSION
         self.base_url = os.path.join(self.airtable_url, base_id)

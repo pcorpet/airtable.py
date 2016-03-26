@@ -1,5 +1,5 @@
-
-import airtable
+from airtable.airtable import Airtable
+from airtable import airtable
 import mock
 import requests
 import unittest
@@ -13,7 +13,7 @@ class TestAirtable(unittest.TestCase):
     def setUp(self):
         self.base_id = FAKE_BASE_ID
         self.api_key = FAKE_API_KEY
-        self.airtable = airtable.Airtable(self.base_id, self.api_key)
+        self.airtable = Airtable(self.base_id, self.api_key)
 
     def test_build_base_url(self):
         self.assertEqual(self.airtable.base_url,
