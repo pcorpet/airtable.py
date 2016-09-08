@@ -1,4 +1,6 @@
-import os, json, requests
+import json
+import os
+import requests
 from collections import OrderedDict
 
 API_URL = 'https://api.airtable.com/v%s/'
@@ -35,7 +37,7 @@ def create_payload(data):
     return {'fields': data}
 
 
-class Airtable:
+class Airtable(object):
     def __init__(self, base_id, api_key):
         self.airtable_url = API_URL % API_VERSION
         self.base_url = os.path.join(self.airtable_url, base_id)
@@ -68,10 +70,33 @@ class Airtable:
         else:
             url = table_name
             if limit and check_integer(limit):
-                params.update({'limit': limit})
+                params.update({'pageSize': limit})
             if offset and check_string(offset):
                 params.update({'offset': offset})
         return self.__request('GET', url, params)
+
+    def iterate(self, table_name, batch_size=0):
+        """Iterate over all records of a table.
+
+        Args:
+            table_name: the name of the table to list.
+            batch_size: the number of records to fetch per request. The default
+                (0) is using the default of the API which is (as of 2016-09)
+                100. Note that the API does not allow more than that (but
+                allow for less).
+        Yields:
+            A dict for each record containing at least three fields: "id",
+            "createdTime" and "fields".
+        """
+        offset = None
+        while True:
+            response = self.get(table_name, limit=batch_size, offset=offset)
+            for record in response.pop('records'):
+                yield record
+            if 'offset' in response:
+                offset = response['offset']
+            else:
+                break
 
     def create(self, table_name, data):
         if check_string(table_name):
