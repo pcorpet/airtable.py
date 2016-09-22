@@ -63,7 +63,9 @@ class Airtable(object):
                 'error': dict(code=r.status_code, message=message)
             }
 
-    def get(self, table_name, record_id=None, limit=0, offset=None):
+    def get(
+            self, table_name, record_id=None, limit=0, offset=None,
+            filter_by_formula=None, view=None):
         params = {}
         if check_string(record_id):
             url = os.path.join(table_name, record_id)
@@ -73,9 +75,14 @@ class Airtable(object):
                 params.update({'pageSize': limit})
             if offset and check_string(offset):
                 params.update({'offset': offset})
+            if filter_by_formula is not None:
+                params.update({'filterByFormula': filter_by_formula})
+            if view is not None:
+                params.update({'view': view})
         return self.__request('GET', url, params)
 
-    def iterate(self, table_name, batch_size=0):
+    def iterate(
+            self, table_name, batch_size=0, filter_by_formula=None, view=None):
         """Iterate over all records of a table.
 
         Args:
@@ -84,13 +91,23 @@ class Airtable(object):
                 (0) is using the default of the API which is (as of 2016-09)
                 100. Note that the API does not allow more than that (but
                 allow for less).
+            filter_by_formula: a formula used to filter records. The formula
+                will be evaluated for each record, and if the result is not 0,
+                false, "", NaN, [], or #Error! the record will be included in
+                the response. If combined with view, only records in that view
+                which satisfy the formula will be returned.
+            view: the name or ID of a view in the table. If set, only the
+                records in that view will be returned. The records will be
+                sorted according to the order of the view.
         Yields:
             A dict for each record containing at least three fields: "id",
             "createdTime" and "fields".
         """
         offset = None
         while True:
-            response = self.get(table_name, limit=batch_size, offset=offset)
+            response = self.get(
+                table_name, limit=batch_size, offset=offset,
+                filter_by_formula=filter_by_formula, view=view)
             for record in response.pop('records'):
                 yield record
             if 'offset' in response:
