@@ -128,6 +128,32 @@ class TestAirtable(unittest.TestCase):
         r = self.airtable.get(FAKE_TABLE_NAME, '123')
         self.assertEqual(r['error']['code'], 404)
 
+    @mock.patch.object(requests, 'request')
+    def test_get_view(self, mock_request):
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {'records': []}
+        mock_request.return_value = mock_response
+
+        r = self.airtable.get(FAKE_TABLE_NAME, view='My view')
+        mock_request.assert_called_once_with(
+            'GET', 'https://api.airtable.com/v0/app12345/TableName',
+            data=None, headers={'Authorization': 'Bearer fake_api_key'},
+            params={'view': 'My view'})
+
+    @mock.patch.object(requests, 'request')
+    def test_get_filter_by_formula(self, mock_request):
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {'records': []}
+        mock_request.return_value = mock_response
+
+        r = self.airtable.get(FAKE_TABLE_NAME, filter_by_formula="{title} = ''")
+        mock_request.assert_called_once_with(
+            'GET', 'https://api.airtable.com/v0/app12345/TableName',
+            data=None, headers={'Authorization': 'Bearer fake_api_key'},
+            params={'filterByFormula': "{title} = ''"})
+
     def test_invalid_get(self):
         with self.assertRaises(airtable.IsNotString):
             self.airtable.get(FAKE_TABLE_NAME, 123)
