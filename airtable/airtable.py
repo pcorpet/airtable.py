@@ -41,7 +41,7 @@ class Airtable(object):
     def __init__(self, base_id, api_key):
         self.airtable_url = API_URL % API_VERSION
         self.base_url = posixpath.join(self.airtable_url, base_id)
-        self.headers = {'Authorization': 'Bearer %s' % api_key}
+        self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:39.0)', 'Authorization': 'Bearer %s' % api_key}
 
     def __request(self, method, url, params=None, payload=None):
         if method in ['POST', 'PUT', 'PATCH']:
