@@ -87,7 +87,7 @@ class Airtable(object):
                 message = None
                 r.raise_for_status()
             except requests.exceptions.HTTPError as e:
-                message = e.message
+                message = e
             return {
                 'error': dict(code=r.status_code, message=message)
             }
