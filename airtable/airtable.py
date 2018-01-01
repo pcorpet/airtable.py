@@ -1,6 +1,7 @@
 import json
 import posixpath 
 import requests
+import time
 from collections import OrderedDict
 
 API_URL = 'https://api.airtable.com/v%s/'
@@ -37,13 +38,41 @@ def create_payload(data):
     return {'fields': data}
 
 
+# Limit of requests per second on free plan
+RPS_LIMIT = 5
+# time to sleep to have less than RPS_LIMIT rps
+SLEEP_EPSILON = 0.0001
+
+
 class Airtable(object):
-    def __init__(self, base_id, api_key):
+    def __init__(self, base_id, api_key, rps_limit=RPS_LIMIT):
+        '''
+
+        :param base_id:
+        :param api_key:
+        :param rps_limit: limit of requests per second (default: 5), None - turns off throttling
+        '''
+
         self.airtable_url = API_URL % API_VERSION
         self.base_url = posixpath.join(self.airtable_url, base_id)
         self.headers = {'Authorization': 'Bearer %s' % api_key}
 
+        # times of last RPS_LIMIT requests ordered by timestamp
+        self.rps_limit = rps_limit
+        if self.rps_limit is not None:
+            self.__req_history = []
+
     def __request(self, method, url, params=None, payload=None):
+        if self.rps_limit is not None:
+            current_time = time.time()
+
+            self.__req_history = [i for i in self.__req_history if i > current_time - 1.]
+
+            if len(self.__req_history) >= RPS_LIMIT:
+                time.sleep(1. - (current_time - self.__req_history[0]) + SLEEP_EPSILON)
+
+            self.__req_history.append(time.time())
+
         if method in ['POST', 'PUT', 'PATCH']:
             self.headers.update({'Content-type': 'application/json'})
         r = requests.request(method,

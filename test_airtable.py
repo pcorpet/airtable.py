@@ -3,6 +3,8 @@ from airtable import airtable
 import mock
 import requests
 import unittest
+import time
+from collections import defaultdict
 
 FAKE_TABLE_NAME = 'TableName'
 FAKE_BASE_ID = 'app12345'
@@ -58,7 +60,7 @@ class TestAirtable(unittest.TestCase):
 
         # Set the text content of the response to a JSON string so we can test
         # how it gets deserialized
-        mock_response._content = '''{
+        mock_response._content = b'''{
             "records": [
                 {
                     "id": "reccA6yaHKzw5Zlp0",
@@ -101,8 +103,8 @@ class TestAirtable(unittest.TestCase):
 
         mock_request.return_value = mock_response
         r = self.airtable.get(FAKE_TABLE_NAME)
-        self.assertEqual(r['records'][0]['fields'].keys(), list(u'abcdefghijklm'))
-        self.assertEqual(r['records'][1]['fields'].keys(), list(u'nopqrstuvwxyz'))
+        self.assertEqual(list(r['records'][0]['fields'].keys()), list(u'abcdefghijklm'))
+        self.assertEqual(list(r['records'][1]['fields'].keys()), list(u'nopqrstuvwxyz'))
 
     @mock.patch.object(requests, 'request')
     def test_get_by_id(self, mock_request):
@@ -177,6 +179,29 @@ class TestAirtable(unittest.TestCase):
     def test_invalid_delete(self):
         with self.assertRaises(airtable.IsNotString):
             self.airtable.delete(FAKE_TABLE_NAME, 123)
+
+    @mock.patch.object(requests, 'request')
+    def test_rps_limit(self, mock_request):
+        fake_id = 'reccA6yaHKzw5Zlp0'
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'id': 'reccA6yaHKzw5Zlp0',
+            'fields': {
+                'Name': 'John',
+                'Number': '(987) 654-3210'
+            }
+        }
+        mock_request.return_value = mock_response
+
+        n_iterations = 15
+        rps = defaultdict(int)
+
+        for i in range(n_iterations):
+            r = self.airtable.get(FAKE_TABLE_NAME, fake_id)
+            current_time = time.time()
+            rps[int(current_time)] += 1
+            self.assertLessEqual(rps[int(current_time)], 5)
 
 if __name__ == '__main__':
     unittest.main()
