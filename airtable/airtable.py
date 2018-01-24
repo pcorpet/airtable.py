@@ -38,10 +38,11 @@ def create_payload(data):
 
 
 class Airtable(object):
-    def __init__(self, base_id, api_key):
+    def __init__(self, base_id, api_key, proxies=None):
         self.airtable_url = API_URL % API_VERSION
         self.base_url = posixpath.join(self.airtable_url, base_id)
         self.headers = {'Authorization': 'Bearer %s' % api_key}
+        self.proxies = proxies
 
     def __request(self, method, url, params=None, payload=None):
         if method in ['POST', 'PUT', 'PATCH']:
@@ -50,7 +51,8 @@ class Airtable(object):
                              posixpath.join(self.base_url, url),
                              params=params,
                              data=payload,
-                             headers=self.headers)
+                             headers=self.headers,
+                             proxies=self.proxies)
         if r.status_code == requests.codes.ok:
             return r.json(object_pairs_hook=OrderedDict)
         else:
