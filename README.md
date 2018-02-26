@@ -13,7 +13,7 @@ Airtable Python uses the [requests](http://docs.python-requests.org/): make sure
 Once you have created [a new base](https://support.airtable.com/hc/en-us/articles/202576419-Introduction-to-Airtable-bases) and a new table through the Web interface, you're ready to start using Airtable Python.
 
 ```python
-import airtable
+from airtable import airtable
 at = airtable.Airtable('BASE_ID', 'API_KEY')
 at.get('TABLE_NAME')
 ```
