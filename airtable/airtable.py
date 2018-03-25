@@ -54,8 +54,8 @@ class Airtable(object):
         if r.status_code == requests.codes.ok:
             return r.json(object_pairs_hook=OrderedDict)
         else:
+            message = None
             try:
-                message = None
                 r.raise_for_status()
             except requests.exceptions.HTTPError as e:
                 message = str(e)
