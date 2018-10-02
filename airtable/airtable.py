@@ -111,7 +111,7 @@ class Airtable(object):
             for record in response.pop('records'):
                 yield record
             if 'offset' in response:
-                offset = response['offset']
+                offset = response['offset'].encode('ascii','ignore')
             else:
                 break
 
