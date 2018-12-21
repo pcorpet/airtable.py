@@ -1,8 +1,9 @@
 from setuptools import setup
 setup(
     name='airtable',
-    version='0.3.2',
+    version='0.3.3',
     packages=['airtable'],
+    package_data={'airtable': ['py.typed', '*.pyi']},
     install_requires=['requests>=2.5.3'],
     description='Python client library for AirTable',
     author='Nicolo Canali De Rossi, Pascal Corpet',
