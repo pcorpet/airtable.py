@@ -17,7 +17,7 @@ class IsNotString(Exception):
 
 def check_integer(n):
     if not n:
-        return
+        return False
     elif not isinstance(n, int):
         raise IsNotInteger('Expected an integer')
     else:
@@ -26,7 +26,7 @@ def check_integer(n):
 
 def check_string(s):
     if not s:
-        return
+        return False
     elif not isinstance(s, str):
         raise IsNotString('Expected a string')
     else:
