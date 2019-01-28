@@ -1,10 +1,9 @@
 language: python
 python:
   - 2.7
-  - 3.7
 install:
   - pip install -r requirements.txt
 script: python airtable/airtable_test.py
 notifications:
   email:
-    - joseph@bestjames.com
+    - nico.canali@gmail.com
