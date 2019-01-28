@@ -1,6 +1,8 @@
-# Airtable Python
+# Airtable.py: Python API wrapper for Airtable
 
 Python interface to the Airtable's REST API - https://airtable.com - [![Build Status](https://travis-ci.org/josephbestjames/airtable.py.svg?branch=master)](https://travis-ci.org/josephbestjames/airtable.py)
+
+For javascript enthusiasts: https://github.com/Airtable/airtable.js
 
 ## Installation
 

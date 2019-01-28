@@ -6,4 +6,4 @@ install:
 script: python airtable/airtable_test.py
 notifications:
   email:
-    - nico.canali@gmail.com
+    - joseph@bestjames.com
