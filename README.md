@@ -1,6 +1,6 @@
 # Airtable Python
 
-Python interface to the Airtable's REST API - https://airtable.com - [![Build Status](https://travis-ci.org/josephbestjames/airtable.py)](https://travis-ci.org/josephbestjames/airtable.py)
+Python interface to the Airtable's REST API - https://airtable.com - [![Build Status](https://travis-ci.org/josephbestjames/airtable.py.svg?branch=master)](https://travis-ci.org/josephbestjames/airtable.py)
 
 ## Installation
 
