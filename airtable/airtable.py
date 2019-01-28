@@ -65,7 +65,7 @@ class Airtable(object):
 
     def get(
             self, table_name, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None):
+            filter_by_formula=None, view=None, max_records=0, fields=[]):
         params = {}
         if check_string(record_id):
             url = posixpath.join(table_name, record_id)
@@ -79,10 +79,17 @@ class Airtable(object):
                 params.update({'filterByFormula': filter_by_formula})
             if view is not None:
                 params.update({'view': view})
+            if max_records and check_integer(max_records):
+                params.update({'maxRecords': max_records})
+            if fields and type(fields) is list:
+                for field in fields: check_string(field)
+                params.update({'fields': fields})
+
         return self.__request('GET', url, params)
 
     def iterate(
-            self, table_name, batch_size=0, filter_by_formula=None, view=None):
+            self, table_name, batch_size=0, filter_by_formula=None, 
+            view=None, max_records=0, fields=[]):
         """Iterate over all records of a table.
 
         Args:
@@ -106,12 +113,12 @@ class Airtable(object):
         offset = None
         while True:
             response = self.get(
-                table_name, limit=batch_size, offset=offset,
-                filter_by_formula=filter_by_formula, view=view)
+                table_name, limit=batch_size, offset=offset, max_records=max_records, 
+                fields=fields, filter_by_formula=filter_by_formula, view=view)
             for record in response.pop('records'):
                 yield record
             if 'offset' in response:
-                offset = response['offset']
+                offset = response['offset'].encode('ascii','ignore')
             else:
                 break
 
