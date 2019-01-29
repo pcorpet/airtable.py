@@ -39,10 +39,21 @@ def create_payload(data):
 
 
 class Airtable(object):
-    def __init__(self, base_id, api_key):
+    def __init__(self, base_id, api_key, dict_class=OrderedDict):
+        """Create a client to connect to an Airtable Base.
+
+        Args:
+            - base_id: The ID of the base, e.g. "appA0CDAE34F"
+            - api_key: The API secret key, e.g. "keyBAAE123C"
+            - dict_class: the class to use to build dictionaries for returning
+                  fields. By default the fields are kept in the order they were
+                  returned by the API using an OrderedDict, but you can switch
+                  to a simple dict if you prefer.
+        """
         self.airtable_url = API_URL % API_VERSION
         self.base_url = posixpath.join(self.airtable_url, base_id)
         self.headers = {'Authorization': 'Bearer %s' % api_key}
+        self._dict_class = dict_class
 
     def __request(self, method, url, params=None, payload=None):
         if method in ['POST', 'PUT', 'PATCH']:
@@ -53,7 +64,7 @@ class Airtable(object):
                              data=payload,
                              headers=self.headers)
         if r.status_code == requests.codes.ok:
-            return r.json(object_pairs_hook=OrderedDict)
+            return r.json(object_pairs_hook=self._dict_class)
         else:
             try:
                 message = None
