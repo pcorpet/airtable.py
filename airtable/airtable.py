@@ -1,6 +1,7 @@
 import json
 import posixpath 
 import requests
+import six
 from collections import OrderedDict
 
 API_URL = 'https://api.airtable.com/v%s/'
@@ -18,7 +19,7 @@ class IsNotString(Exception):
 def check_integer(n):
     if not n:
         return False
-    elif not isinstance(n, int):
+    elif not isinstance(n, six.integer_types):
         raise IsNotInteger('Expected an integer')
     else:
         return True
@@ -27,7 +28,7 @@ def check_integer(n):
 def check_string(s):
     if not s:
         return False
-    elif not isinstance(s, str):
+    elif not isinstance(s, six.string_types):
         raise IsNotString('Expected a string')
     else:
         return True
