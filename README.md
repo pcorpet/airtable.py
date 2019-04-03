@@ -6,7 +6,7 @@ For javascript enthusiasts: https://github.com/Airtable/airtable.js
 
 ## Installation
 
-Airtable Python uses the [requests](http://docs.python-requests.org/): make sure you have it installed by running
+Airtable Python uses [Requests.py](http://docs.python-requests.org/): make sure you have it installed by running
 
     $ pip install requests
 
