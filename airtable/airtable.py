@@ -1,5 +1,5 @@
 import json
-import posixpath 
+import posixpath
 import requests
 import six
 from collections import OrderedDict
@@ -94,13 +94,14 @@ class Airtable(object):
             if max_records and check_integer(max_records):
                 params.update({'maxRecords': max_records})
             if fields and type(fields) is list:
-                for field in fields: check_string(field)
+                for field in fields:
+                    check_string(field)
                 params.update({'fields': fields})
 
         return self.__request('GET', url, params)
 
     def iterate(
-            self, table_name, batch_size=0, filter_by_formula=None, 
+            self, table_name, batch_size=0, filter_by_formula=None,
             view=None, max_records=0, fields=[]):
         """Iterate over all records of a table.
 
@@ -125,12 +126,12 @@ class Airtable(object):
         offset = None
         while True:
             response = self.get(
-                table_name, limit=batch_size, offset=offset, max_records=max_records, 
+                table_name, limit=batch_size, offset=offset, max_records=max_records,
                 fields=fields, filter_by_formula=filter_by_formula, view=view)
             for record in response.pop('records'):
                 yield record
             if 'offset' in response:
-                offset = response['offset'].encode('ascii','ignore')
+                offset = response['offset'].encode('ascii', 'ignore')
             else:
                 break
 
