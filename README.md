@@ -105,6 +105,20 @@ table_name (required) is a string representing the table name
 data (required) is a dictionary containing the fields and the resepective values
 ```
 
+### Create_bulk
+
+Creates several new entries in a table, and returns the newly created entries with its new ID, if
+there is an error trying to create a subset of records it returns the records not created in "records_failed".
+
+```python
+at.create_bulk(table_name, data)
+```
+where
+```
+table_name (required) is a string representing the table name
+data (required) is a list of dictionaries containing the fields and the resepective values
+```
+
 ### Update
 Updates *some* fields in a specific entry in the table. Fields which are not explicitely included will not get updated
 ```python
