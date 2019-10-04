@@ -1,13 +1,14 @@
 
 import airtable
 import mock
+import os
 import requests
 import unittest
+
 
 FAKE_TABLE_NAME = 'TableName'
 FAKE_BASE_ID = 'app12345'
 FAKE_API_KEY = 'fake_api_key'
-
 
 class TestAirtable(unittest.TestCase):
     def setUp(self):
@@ -151,6 +152,51 @@ class TestAirtable(unittest.TestCase):
     def test_invalid_delete(self):
         with self.assertRaises(airtable.IsNotString):
             self.airtable.delete(FAKE_TABLE_NAME, 123)
+
+TABLE_NAME = os.environ.get("AIRTABLE_TEST_TABLE_NAME")
+BASE_ID = os.environ.get("AIRTABLE_TEST_BASE_ID")
+API_KEY = os.environ.get("AIRTABLE_TEST_API_KEY")
+
+@unittest.skipUnless(TABLE_NAME and BASE_ID and API_KEY, "Need to set up AIRTABLE TEST environment variables")
+class TestAirtableIntegration(unittest.TestCase):
+    def setUp(self):
+        self.table_name = TABLE_NAME
+        self.base_id = BASE_ID
+        self.api_key = API_KEY
+        self.airtable = airtable.Airtable(self.base_id, self.api_key)
+
+    def test_create(self):
+        res = self.airtable.create(self.table_name, {
+            'Name': 'John',
+            'Number': '(987) 654-3210'
+        })
+        self.assertFalse("error" in res)
+
+    def test_create_bulk(self):
+        data = []
+        records_number = 14
+        for i in range(records_number):
+            data.append({
+                'Name': 'John {}'.format(i),
+                'Number': '(987) 654-3210{}'.format(i)
+            })
+
+        res = self.airtable.bulk_create(self.table_name, data)
+        self.assertFalse("error" in res)
+        self.assertTrue("records" in res and len(res["records"]) == records_number)
+
+    def test_create_bulk_small_batch(self):
+        data = []
+        records_number = 9
+        for i in range(records_number):
+            data.append({
+                'Name': 'John {}'.format(i),
+                'Number': '(987) 654-3210{}'.format(i)
+            })
+
+        res = self.airtable.bulk_create(self.table_name, data)
+        self.assertFalse("error" in res)
+        self.assertTrue("records" in res and len(res["records"]) == records_number)
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 API_URL = 'https://api.airtable.com/v%s/'
 API_VERSION = '0'
+BULK_LIMIT = 10
 
 
 class IsNotInteger(Exception):
@@ -15,6 +16,8 @@ class IsNotInteger(Exception):
 class IsNotString(Exception):
     pass
 
+class ErrorStoringBatch(Exception):
+    pass
 
 def check_integer(n):
     if not n:
@@ -140,6 +143,41 @@ class Airtable(object):
             payload = create_payload(data)
             return self.__request('POST', table_name,
                                   payload=json.dumps(payload))
+
+    def _create_batch(self, table_name, batch):
+        batch_result = self.__request('POST', table_name,
+            payload=json.dumps({"records": batch}))
+        if not "error" in batch_result:
+            return batch_result
+        else:
+            raise ErrorStoringBatch("Error creating records in the batch")
+
+    def bulk_create(self, table_name, data):
+        if check_string(table_name):
+            payload = []
+            records_stored = []
+            records_failed = []
+            for idx, record in enumerate(data):
+                if (payload and idx % BULK_LIMIT == 0):
+                    try:
+                        batch_result = self._create_batch(table_name, payload)
+                        records_stored.extend(batch_result["records"])
+                    except ErrorStoringBatch as e:
+                        records_failed.append(payload)
+                    payload = []
+                payload.append(create_payload(record))
+
+            if payload:
+                try:
+                    batch_result = self._create_batch(table_name, payload)
+                    records_stored.extend(batch_result["records"])
+                except ErrorStoringBatch as e:
+                    records_failed.append(payload)
+
+            if records_failed:
+                return {"records": records_stored, "records_failed": records_failed}
+            else:
+                return {"records": records_stored}
 
     def update(self, table_name, record_id, data):
         if check_string(table_name) and check_string(record_id):
