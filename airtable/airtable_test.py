@@ -169,7 +169,7 @@ class TestAirtableIntegration(unittest.TestCase):
             'Name': 'John',
             'Number': '(987) 654-3210'
         })
-        self.assertFalse("error" in res)
+        self.assertNotIn('error', res)
 
     def test_create_bulk(self):
         data = []
@@ -181,8 +181,8 @@ class TestAirtableIntegration(unittest.TestCase):
             })
 
         res = self.airtable.bulk_create(self.table_name, data)
-        self.assertFalse("error" in res)
-        self.assertTrue("records" in res and len(res["records"]) == records_number)
+        self.assertNotIn('error', res)
+        self.assertTrue('records' in res and len(res['records']) == records_number)
 
     def test_create_bulk_small_batch(self):
         data = []
@@ -194,8 +194,8 @@ class TestAirtableIntegration(unittest.TestCase):
             })
 
         res = self.airtable.bulk_create(self.table_name, data)
-        self.assertFalse("error" in res)
-        self.assertTrue("records" in res and len(res["records"]) == records_number)
+        self.assertFalse('error' in res)
+        self.assertTrue('records' in res and len(res['records']) == records_number)
 
 if __name__ == '__main__':
     unittest.main()

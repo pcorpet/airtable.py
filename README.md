@@ -107,7 +107,7 @@ data (required) is a dictionary containing the fields and the resepective values
 
 ### Create_bulk
 
-Creates several new entries in a table, and returns the newly created entries with its new ID, if
+Creates several new entries in a table, and returns the newly created entries with their new IDs, if
 there is an error trying to create a subset of records it returns the records not created in "records_failed".
 
 ```python
