@@ -152,11 +152,11 @@ class TestAirtable(unittest.TestCase):
         with self.assertRaises(airtable.IsNotString):
             self.airtable.delete(FAKE_TABLE_NAME, 123)
 
-TABLE_NAME = os.environ.get("AIRTABLE_TEST_TABLE_NAME")
-BASE_ID = os.environ.get("AIRTABLE_TEST_BASE_ID")
-API_KEY = os.environ.get("AIRTABLE_TEST_API_KEY")
+TABLE_NAME = os.environ.get('AIRTABLE_TEST_TABLE_NAME')
+BASE_ID = os.environ.get('AIRTABLE_TEST_BASE_ID')
+API_KEY = os.environ.get('AIRTABLE_TEST_API_KEY')
 
-@unittest.skipUnless(TABLE_NAME and BASE_ID and API_KEY, "Need to set up AIRTABLE TEST environment variables")
+@unittest.skipUnless(TABLE_NAME and BASE_ID and API_KEY, 'Need to set up AIRTABLE TEST environment variables')
 class TestAirtableIntegration(unittest.TestCase):
     def setUp(self):
         self.table_name = TABLE_NAME
