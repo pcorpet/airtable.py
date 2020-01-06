@@ -116,7 +116,7 @@ at.create_bulk(table_name, data)
 where
 ```
 table_name (required) is a string representing the table name
-data (required) is a list of dictionaries containing the fields and the resepective values
+data (required) is a list of dictionaries containing the fields and the respective values
 ```
 
 ### Update
