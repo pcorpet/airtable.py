@@ -194,7 +194,7 @@ class TestAirtableIntegration(unittest.TestCase):
             })
 
         res = self.airtable.bulk_create(self.table_name, data)
-        self.assertFalse('error' in res)
+        self.assertNotIn('error', res)
         self.assertTrue('records' in res and len(res['records']) == records_number)
 
 if __name__ == '__main__':
