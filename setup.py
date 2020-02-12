@@ -1,7 +1,7 @@
 from setuptools import setup
 setup(
     name='airtable',
-    version='0.3.3',
+    version='0.4.0',
     packages=['airtable'],
     package_data={'airtable': ['py.typed', '*.pyi']},
     install_requires=['requests>=2.20.0'],
