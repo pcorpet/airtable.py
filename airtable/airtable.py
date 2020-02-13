@@ -67,12 +67,19 @@ class Airtable(object):
             return r.json(object_pairs_hook=self._dict_class)
         else:
             try:
-                message = None
                 r.raise_for_status()
+                message = r.text
             except requests.exceptions.HTTPError as e:
-                message = str(e)
+                message = f'{e}: {r.text}'
+                try:
+                    result = r.json()
+                    if isinstance(result, dict) and 'error' in result:
+                        message = result['error']
+                except json.decoder.JSONDecodeError:
+                    pass
             return {
-                'error': dict(code=r.status_code, message=message)
+                'error': message,
+                'error_code': r.status_code,
             }
 
     def get(
