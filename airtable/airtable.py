@@ -66,11 +66,11 @@ class Airtable(object):
         try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            message = f'{e}: {r.text}'
+            message = '{e}: {text}'.format(e=e, text=r.text)
             try:
                 result = r.json()
                 if isinstance(result, dict) and 'error' in result:
-                    message = f'{e}: {result["error"]}'
+                    message = '{e}: {text}'.format(e=e, text=result['error'])
             except json.decoder.JSONDecodeError:
                 pass
             return {
