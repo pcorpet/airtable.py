@@ -97,12 +97,12 @@ class TestAirtable(unittest.TestCase):
                     }
                 }
             ]
-        }'''
+        }'''.encode('utf-8')
 
         mock_request.return_value = mock_response
         r = self.airtable.get(FAKE_TABLE_NAME)
-        self.assertEqual(r['records'][0]['fields'].keys(), list(u'abcdefghijklm'))
-        self.assertEqual(r['records'][1]['fields'].keys(), list(u'nopqrstuvwxyz'))
+        self.assertEqual(list(r['records'][0]['fields'].keys()), list(u'abcdefghijklm'))
+        self.assertEqual(list(r['records'][1]['fields'].keys()), list(u'nopqrstuvwxyz'))
 
     @mock.patch.object(requests, 'request')
     def test_get_by_id(self, mock_request):
