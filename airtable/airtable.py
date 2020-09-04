@@ -159,3 +159,34 @@ class Airtable(object):
         if check_string(table_name) and check_string(record_id):
             url = posixpath.join(table_name, record_id)
             return self.__request('DELETE', url)
+
+    def table(self, table_name):
+        return AirtableTable(self, table_name)
+
+
+class AirtableTable(object):
+    def __init__(self, base_id, table_name, *args, **kwargs):
+        """Create a client to connect to an Airtable Table.
+
+        Args:
+            - base_id: The ID of the base, e.g. "appA0CDAE34F"
+            - table_name: The name or ID of the table, e.g. "tbl123adfe4"
+            - api_key: The API secret key, e.g. "keyBAAE123C"
+            - dict_class: the class to use to build dictionaries for returning
+                  fields. By default the fields are kept in the order they were
+                  returned by the API using an OrderedDict, but you can switch
+                  to a simple dict if you prefer.
+        """
+        self.table_name = table_name
+        if isinstance(base_id, Airtable):
+            self._client = base_id
+            return
+        self._client = Airtable(base_id, *args, **kwargs)
+
+    def __getattr__(self, name):
+        if name not in set(['get', 'create', 'iterate', 'update', 'update_all', 'delete']):
+            raise AttributeError(
+                "'%s' object has no attribute '%s'" % (self.__class__.__name__, name))
+        return lambda *args, **kwargs: getattr(self._client, name)(
+            self.table_name, *args, **kwargs)
+
