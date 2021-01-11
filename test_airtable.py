@@ -1,5 +1,4 @@
-from airtable.airtable import Airtable
-from airtable import airtable
+import airtable
 import mock
 import requests
 import unittest
@@ -13,7 +12,7 @@ class TestAirtable(unittest.TestCase):
     def setUp(self):
         self.base_id = FAKE_BASE_ID
         self.api_key = FAKE_API_KEY
-        self.airtable = Airtable(self.base_id, self.api_key)
+        self.airtable = airtable.Airtable(self.base_id, self.api_key)
 
     def test_build_base_url(self):
         self.assertEqual(self.airtable.base_url,
@@ -58,7 +57,7 @@ class TestAirtable(unittest.TestCase):
 
         # Set the text content of the response to a JSON string so we can test
         # how it gets deserialized
-        mock_response._content = '''{
+        mock_response._content = b'''{
             "records": [
                 {
                     "id": "reccA6yaHKzw5Zlp0",
@@ -98,11 +97,12 @@ class TestAirtable(unittest.TestCase):
                 }
             ]
         }'''
+        mock_response.encoding = 'utf-8'
 
         mock_request.return_value = mock_response
         r = self.airtable.get(FAKE_TABLE_NAME)
-        self.assertEqual(r['records'][0]['fields'].keys(), list(u'abcdefghijklm'))
-        self.assertEqual(r['records'][1]['fields'].keys(), list(u'nopqrstuvwxyz'))
+        self.assertEqual(list(r['records'][0]['fields'].keys()), list(u'abcdefghijklm'))
+        self.assertEqual(list(r['records'][1]['fields'].keys()), list(u'nopqrstuvwxyz'))
 
     @mock.patch.object(requests, 'request')
     def test_get_by_id(self, mock_request):

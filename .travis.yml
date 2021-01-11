@@ -1,9 +1,10 @@
 language: python
 python:
   - 2.7
+  - 3.9
 install:
   - pip install -r requirements.txt
-script: python airtable/airtable_test.py
+script: python test_airtable.py
 notifications:
   email:
     - joseph@bestjames.com
