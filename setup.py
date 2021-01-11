@@ -4,7 +4,7 @@ setup(
     version='0.3.3',
     packages=['airtable'],
     package_data={'airtable': ['py.typed', '*.pyi']},
-    install_requires=['requests>=2.20.0'],
+    install_requires=['requests>=2.20.0', 'six'],
     description='Python client library for AirTable',
     author='Joseph Best-James, Nicolo Canali De Rossi, Pascal Corpet',
     url='https://github.com/josephbestjames/airtable.py',

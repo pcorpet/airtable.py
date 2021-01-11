@@ -1,5 +1,5 @@
 import typing
-from typing import Any, TypedDict
+from typing import Any, Dict, Iterable, Iterator, List, Optional, TypedDict, overload
 
 API_URL: str
 API_VERSION: str
@@ -37,7 +37,8 @@ class Airtable(object):
     base_url: str = ...
     headers: Dict[str, str] = ...
 
-    def __init__(self, base_id: str, api_key: str) -> None:
+    def __init__(
+            self, base_id: str, api_key: str, dict_class: type = ...) -> None:
         ...
 
     def iterate(
@@ -45,7 +46,9 @@ class Airtable(object):
             table_name: str,
             batch_size: int = 0,
             filter_by_formula: Optional[str] = None,
-            view: Optional[str] = None) -> Iterator[_Record]:
+            view: Optional[str] = None,
+            max_records: int = 0,
+            fields: Iterable[str] = ...) -> Iterator[_Record]:
         ...
 
     @overload
@@ -56,7 +59,9 @@ class Airtable(object):
             limit: int = 0,
             offset: Optional[int] = None,
             filter_by_formula: Optional[str] = None,
-            view: Optional[str] = None) -> Dict[str, List[_Record]]:
+            view: Optional[str] = None,
+            max_records: int = 0,
+            fields: Iterable[str] = ...) -> Dict[str, List[_Record]]:
      ...
 
     @overload
@@ -67,7 +72,9 @@ class Airtable(object):
             limit: int = 0,
             offset: Optional[int] = None,
             filter_by_formula: Optional[str] = None,
-            view: Optional[str] = None) \
+            view: Optional[str] = None,
+            max_records: int = 0,
+            fields: Iterable[str] = ...) \
             -> _Record:
         ...
 
