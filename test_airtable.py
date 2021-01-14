@@ -124,9 +124,17 @@ class TestAirtable(unittest.TestCase):
     def test_get_not_found(self, mock_request):
         mock_response = mock.MagicMock()
         mock_response.status_code = 404
+        mock_response.json.return_value = {
+            'error': {
+                'type': 'TABLE_NOT_FOUND',
+                'message': 'Could not find table %s in application %s' % (
+                    FAKE_TABLE_NAME, FAKE_BASE_ID),
+            },
+        }
         mock_request.return_value = mock_response
-        r = self.airtable.get(FAKE_TABLE_NAME, '123')
-        self.assertEqual(r['error']['code'], 404)
+        with self.assertRaises(airtable.AirtableError) as error:
+            self.airtable.get(FAKE_TABLE_NAME, '123')
+        self.assertEqual('TABLE_NOT_FOUND', error.exception.type)
 
     @mock.patch.object(requests, 'request')
     def test_get_view(self, mock_request):
