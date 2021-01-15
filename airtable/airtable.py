@@ -38,6 +38,23 @@ def create_payload(data):
     return {'fields': data}
 
 
+class AirtableError(Exception):
+
+    def __init__(self, error_type, message):
+        super(AirtableError, self).__init__()
+        # Examples of types are:
+        #  TABLE_NOT_FOUND
+        #  VIEW_NAME_NOT_FOUND
+        self.type = error_type
+        self.message = message
+
+    def __repr__(self):
+        return '%s(%r, %r)' % (self.__class__.__name__, self.type, self.message)
+
+    def __str__(self):
+        return self.message or self.__class__.__name__
+
+
 class Airtable(object):
     def __init__(self, base_id, api_key, dict_class=OrderedDict):
         """Create a client to connect to an Airtable Base.
@@ -66,14 +83,10 @@ class Airtable(object):
         if r.status_code == requests.codes.ok:
             return r.json(object_pairs_hook=self._dict_class)
         else:
-            try:
-                message = None
-                r.raise_for_status()
-            except requests.exceptions.HTTPError as e:
-                message = str(e)
-            return {
-                'error': dict(code=r.status_code, message=message)
-            }
+            error_json = r.json().get('error', {})
+            raise AirtableError(
+                error_type=error_json.get('type', str(r.status_code)),
+                message=error_json.get('message', json.dumps(r.json())))
 
     def get(
             self, table_name, record_id=None, limit=0, offset=None,

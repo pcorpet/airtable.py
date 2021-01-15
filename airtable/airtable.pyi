@@ -31,6 +31,15 @@ class _DeletedRecord(TypedDict):
     id: str
 
 
+class AirtableError(Exception):
+
+    type: str
+    message: str
+
+    def __init__(self, error_type: str, message: str) -> None:
+        ...
+
+
 # TODO(cyrille): Add Generic[RecordType] for more information on what's in a record.
 class Airtable(object):
     airtable_url: str = ...
