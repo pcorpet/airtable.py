@@ -172,3 +172,50 @@ class Airtable(object):
         if check_string(table_name) and check_string(record_id):
             url = posixpath.join(table_name, record_id)
             return self.__request('DELETE', url)
+
+    def table(self, table_name):
+        return Table(self, table_name)
+
+
+class Table(object):
+    def __init__(self, base_id, table_name, api_key=None, dict_class=OrderedDict):
+        """Create a client to connect to an Airtable Table.
+
+        Args:
+            - base_id: The ID of the base, e.g. "appA0CDAE34F"
+            - table_name: The name or ID of the table, e.g. "tbl123adfe4"
+            - api_key: The API secret key, e.g. "keyBAAE123C"
+            - dict_class: the class to use to build dictionaries for returning
+                  fields. By default the fields are kept in the order they were
+                  returned by the API using an OrderedDict, but you can switch
+                  to a simple dict if you prefer.
+        """
+        self.table_name = table_name
+        if isinstance(base_id, Airtable):
+            self._client = base_id
+            return
+        self._client = Airtable(base_id, api_key, dict_class=dict_class)
+
+    def get(
+            self, record_id=None, limit=0, offset=None,
+            filter_by_formula=None, view=None, max_records=0, fields=[]):
+        return self._client.get(
+            self.table_name, record_id, limit, offset, filter_by_formula, view, max_records, fields)
+
+    def iterate(
+            self, batch_size=0, filter_by_formula=None,
+            view=None, max_records=0, fields=[]):
+        return self._client.iterate(
+            self.table_name, batch_size, filter_by_formula, view, max_records, fields)
+
+    def create(self, data):
+        return self._client.create(self.table_name, data)
+
+    def update(self, record_id, data):
+        return self._client.update(self.table_name, record_id, data)
+
+    def update_all(self, record_id, data):
+        return self._client.update_all(self.table_name, record_id, data)
+
+    def delete(self, record_id):
+        return self._client.delete(self.table_name, record_id)
