@@ -14,6 +14,12 @@ class TestAirtable(unittest.TestCase):
         self.api_key = FAKE_API_KEY
         self.airtable = airtable.Airtable(self.base_id, self.api_key)
 
+    def get(self, *args, **kwargs):
+        return self.airtable.get(FAKE_TABLE_NAME, *args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return self.airtable.delete(FAKE_TABLE_NAME, *args, **kwargs)
+
     def test_build_base_url(self):
         self.assertEqual(self.airtable.base_url,
                          'https://api.airtable.com/v0/app12345')
@@ -46,9 +52,9 @@ class TestAirtable(unittest.TestCase):
             'offset': 'reccg3Kke0QvTDW0H'
         }
         mock_request.return_value = mock_response
-        r = self.airtable.get(FAKE_TABLE_NAME)
-        self.assertEqual(len(r['records']), 2)
-        self.assertEqual(r['offset'], 'reccg3Kke0QvTDW0H')
+        res = self.get()
+        self.assertEqual(len(res['records']), 2)
+        self.assertEqual(res['offset'], 'reccg3Kke0QvTDW0H')
 
     @mock.patch.object(requests, 'request')
     def test_order_of_fields_is_preserved(self, mock_request):
@@ -117,7 +123,7 @@ class TestAirtable(unittest.TestCase):
             }
         }
         mock_request.return_value = mock_response
-        r = self.airtable.get(FAKE_TABLE_NAME, fake_id)
+        r = self.get(fake_id)
         self.assertEqual(r['id'], fake_id)
 
     @mock.patch.object(requests, 'request')
@@ -133,7 +139,7 @@ class TestAirtable(unittest.TestCase):
         }
         mock_request.return_value = mock_response
         with self.assertRaises(airtable.AirtableError) as error:
-            self.airtable.get(FAKE_TABLE_NAME, '123')
+            self.get('123')
         self.assertEqual('TABLE_NOT_FOUND', error.exception.type)
 
     @mock.patch.object(requests, 'request')
@@ -143,7 +149,7 @@ class TestAirtable(unittest.TestCase):
         mock_response.json.return_value = {'records': []}
         mock_request.return_value = mock_response
 
-        r = self.airtable.get(FAKE_TABLE_NAME, view='My view')
+        r = self.get(view='My view')
         mock_request.assert_called_once_with(
             'GET', 'https://api.airtable.com/v0/app12345/TableName',
             data=None, headers={'Authorization': 'Bearer fake_api_key'},
@@ -156,7 +162,7 @@ class TestAirtable(unittest.TestCase):
         mock_response.json.return_value = {'records': []}
         mock_request.return_value = mock_response
 
-        r = self.airtable.get(FAKE_TABLE_NAME, filter_by_formula="{title} = ''")
+        r = self.get(filter_by_formula="{title} = ''")
         mock_request.assert_called_once_with(
             'GET', 'https://api.airtable.com/v0/app12345/TableName',
             data=None, headers={'Authorization': 'Bearer fake_api_key'},
@@ -164,10 +170,10 @@ class TestAirtable(unittest.TestCase):
 
     def test_invalid_get(self):
         with self.assertRaises(airtable.IsNotString):
-            self.airtable.get(FAKE_TABLE_NAME, 123)
-            self.airtable.get(FAKE_TABLE_NAME, offset=123)
+            self.get(123)
+            self.get(offset=123)
         with self.assertRaises(airtable.IsNotInteger):
-            self.airtable.get(FAKE_TABLE_NAME, limit='1')
+            self.get(limit='1')
 
     @mock.patch.object(requests, 'request')
     def test_delete(self, mock_request):
@@ -178,13 +184,40 @@ class TestAirtable(unittest.TestCase):
             'id': '1234'
         }
         mock_request.return_value = mock_response
-        r = self.airtable.delete(FAKE_TABLE_NAME, '1234')
+        r = self.delete('1234')
         self.assertTrue(r['deleted'])
         self.assertEqual(r['id'], '1234')
 
     def test_invalid_delete(self):
         with self.assertRaises(airtable.IsNotString):
-            self.airtable.delete(FAKE_TABLE_NAME, 123)
+            self.delete(123)
+
+
+class TestTableFromBase(TestAirtable):
+
+    def setUp(self):
+        super(TestTableFromBase, self).setUp()
+        self.table = self.airtable.table(FAKE_TABLE_NAME)
+
+    def get(self, *args, **kwargs):
+        return self.table.get(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return self.table.delete(*args, **kwargs)
+
+
+class TestTableFromConfig(TestAirtable):
+
+    def setUp(self):
+        super(TestTableFromConfig, self).setUp()
+        self.table = airtable.Table(self.base_id, FAKE_TABLE_NAME, api_key=FAKE_API_KEY)
+
+    def get(self, *args, **kwargs):
+        return self.table.get(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return self.table.delete(*args, **kwargs)
+
 
 if __name__ == '__main__':
     unittest.main()
