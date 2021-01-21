@@ -20,7 +20,7 @@ def check_integer(n):
     if not n:
         return False
     elif not isinstance(n, six.integer_types):
-        raise IsNotInteger('Expected an integer')
+        raise IsNotInteger('Expected an integer', n)
     else:
         return True
 
@@ -29,7 +29,7 @@ def check_string(s):
     if not s:
         return False
     elif not isinstance(s, six.string_types):
-        raise IsNotString('Expected a string')
+        raise IsNotString('Expected a string', s)
     else:
         return True
 
@@ -144,7 +144,7 @@ class Airtable(object):
             for record in response.pop('records'):
                 yield record
             if 'offset' in response:
-                offset = response['offset'].encode('ascii', 'ignore')
+                offset = response['offset']
             else:
                 break
 
