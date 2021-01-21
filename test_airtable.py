@@ -20,6 +20,9 @@ class TestAirtable(unittest.TestCase):
     def delete(self, *args, **kwargs):
         return self.airtable.delete(FAKE_TABLE_NAME, *args, **kwargs)
 
+    def iterate(self, *args, **kwargs):
+        return self.airtable.iterate(FAKE_TABLE_NAME, *args, **kwargs)
+
     def test_build_base_url(self):
         self.assertEqual(self.airtable.base_url,
                          'https://api.airtable.com/v0/app12345')
@@ -192,6 +195,47 @@ class TestAirtable(unittest.TestCase):
         with self.assertRaises(airtable.IsNotString):
             self.delete(123)
 
+    @mock.patch.object(requests, 'request')
+    def test_iterate(self, mock_request):
+        mock_response1 = mock.MagicMock()
+        mock_response1.status_code = 200
+        mock_response1.json.return_value = {
+            'records': [
+                {
+                    'id': 'reccA6yaHKzw5Zlp0',
+                    'fields': {
+                        'Name': 'John',
+                        'Number': '(987) 654-3210'
+                    }
+                },
+                {
+                    'id': 'reccg3Kke0QvTDW0H',
+                    'fields': {
+                        'Name': 'Nico',
+                        'Number': '(123) 222-1131'
+                    }
+                }
+            ],
+            'offset': 'reccg3Kke0QvTDW0H'
+        }
+        mock_response2 = mock.MagicMock()
+        mock_response2.status_code = 200
+        mock_response2.json.return_value = {
+            'records': [
+                {
+                    'id': 'reccA23fSERw5Zlp0',
+                    'fields': {
+                        'Name': 'Ron',
+                        'Number': '(987) 654-3210'
+                    }
+                },
+            ],
+        }
+        mock_request.side_effect = [mock_response1, mock_response2]
+        results = list(self.iterate())
+        self.assertEqual(
+            ['John', 'Nico', 'Ron'], [r.get('fields', {}).get('Name') for r in results])
+
 
 class TestTableFromBase(TestAirtable):
 
@@ -205,6 +249,9 @@ class TestTableFromBase(TestAirtable):
     def delete(self, *args, **kwargs):
         return self.table.delete(*args, **kwargs)
 
+    def iterate(self, *args, **kwargs):
+        return self.table.iterate(*args, **kwargs)
+
 
 class TestTableFromConfig(TestAirtable):
 
@@ -217,6 +264,9 @@ class TestTableFromConfig(TestAirtable):
 
     def delete(self, *args, **kwargs):
         return self.table.delete(*args, **kwargs)
+
+    def iterate(self, *args, **kwargs):
+        return self.table.iterate(*args, **kwargs)
 
 
 if __name__ == '__main__':
