@@ -8,6 +8,7 @@ install:
 script:
   - python test_airtable.py
   - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. stubtest airtable"
+  - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. mypy typetests"
 notifications:
   email:
     - joseph@bestjames.com
