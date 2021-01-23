@@ -1,5 +1,5 @@
 import typing
-from typing import Any, Dict, Generic, Iterable, Iterator, List, Literal, Optional, TypedDict, overload
+from typing import Any, Dict, Generic, Iterable, Iterator, List, Literal, Mapping, Optional, TypedDict, Union, overload
 
 API_URL: str
 API_VERSION: str
@@ -20,14 +20,26 @@ def create_payload(data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     ...
 
 
-# TODO(pcorpet): Switch to generic fields only, when https://github.com/python/mypy/issues/3863 is
-# implemented.
-class _DefaultRecord(TypedDict):
-    id: str
-    createdTime: str
-    fields: typing.Dict[str, typing.Any]
+_RecordType = typing.TypeVar('_RecordType', bound=Mapping[str, Any])
 
-RecordType = typing.TypeVar('RecordType', bound=_DefaultRecord)
+
+# TODO(pcorpet): Switch to use TypedDict, when https://github.com/python/mypy/issues/3863 is
+# implemented.
+class _AirtableRecord(Generic[_RecordType]):
+    @overload
+    def __getitem__(self, key: Literal['id']) -> str:
+        ...
+
+    @overload
+    def __getitem__(self, key: Literal['createdTime']) -> str:
+        ...
+
+    @overload
+    def __getitem__(self, key: Literal['fields']) -> _RecordType:
+        ...
+
+
+_DefaultRecordType = _AirtableRecord[_RecordType]
 
 
 class _DeletedRecord(TypedDict):
@@ -44,7 +56,7 @@ class AirtableError(Exception):
         ...
 
 
-class Table(Generic[RecordType]):
+class Table(Generic[_RecordType]):
     @overload
     def __init__(
             self, base_id: str, table_name: str, api_key: str,  dict_class: type = ...) -> None:
@@ -62,7 +74,7 @@ class Table(Generic[RecordType]):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Iterator[RecordType]:
+            fields: Iterable[str] = ...) -> Iterator[_AirtableRecord[_RecordType]]:
         ...
 
     @overload
@@ -74,7 +86,7 @@ class Table(Generic[RecordType]):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Dict[str, List[RecordType]]:
+            fields: Iterable[str] = ...) -> Dict[str, List[_AirtableRecord[_RecordType]]]:
         ...
 
     @overload
@@ -87,16 +99,20 @@ class Table(Generic[RecordType]):
             view: None = None,
             max_records: Literal[0] = 0,
             fields: Iterable[str] = ...) \
-            -> RecordType:
+            -> _AirtableRecord[_RecordType]:
         ...
 
-    def create(self, data: typing.Dict[str, typing.Any]) -> RecordType:
+    def create(self, data: Mapping[str, Any]) -> _AirtableRecord[_RecordType]:
         ...
 
-    def update(self, record_id: str, data: RecordType) -> RecordType:
+    def update(
+            self, record_id: str,
+            data: Mapping[str, Any]) -> _AirtableRecord[_RecordType]:
         ...
 
-    def update_all(self, record_id: str, data: RecordType) -> RecordType:
+    def update_all(
+            self, record_id: str,
+            data: Mapping[str, Any]) -> _AirtableRecord[_RecordType]:
         ...
 
     def delete(self, record_id: str) -> _DeletedRecord:
@@ -106,7 +122,7 @@ class Table(Generic[RecordType]):
 class Airtable(object):
     airtable_url: str = ...
     base_url: str = ...
-    headers: Dict[str, str] = ...
+    headers: Mapping[str, str] = ...
 
     def __init__(
             self, base_id: str, api_key: str, dict_class: type = ...) -> None:
@@ -119,7 +135,7 @@ class Airtable(object):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Iterator[RecordType]:
+            fields: Iterable[str] = ...) -> Iterator[_DefaultRecordType]:
         ...
 
     @overload
@@ -132,7 +148,7 @@ class Airtable(object):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Dict[str, List[RecordType]]:
+            fields: Iterable[str] = ...) -> Dict[str, List[_DefaultRecordType]]:
      ...
 
     @overload
@@ -146,22 +162,22 @@ class Airtable(object):
             view: None = None,
             max_records: Literal[0] = 0,
             fields: Iterable[str] = ...) \
-            -> RecordType:
+            -> _DefaultRecordType:
         ...
 
-    def create(self, table_name: str, data: typing.Dict[str, typing.Any]) -> RecordType:
+    def create(self, table_name: str, data: _RecordType) -> _AirtableRecord[_RecordType]:
         ...
 
-    def update(self, table_name: str, record_id: str, data: RecordType) \
-            -> RecordType:
+    def update(self, table_name: str, record_id: str, data: _RecordType) \
+            -> _AirtableRecord[_RecordType]:
         ...
 
-    def update_all(self, table_name: str, record_id: str, data: RecordType) \
-            -> RecordType:
+    def update_all(self, table_name: str, record_id: str, data: _RecordType) \
+            -> _AirtableRecord[_RecordType]:
         ...
 
-    def delete(self, table_name: str, record_id: str) -> _DeletedRecord:
+    def delete(self, table_name: str, record_id: str) -> _DefaultRecordType:
         ...
 
-    def table(self, table_name: str) -> Table[RecordType]:
+    def table(self, table_name: str) -> Table[_RecordType]:
         ...
