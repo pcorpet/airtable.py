@@ -2,6 +2,8 @@
 *.ipynb
 .idea
 venv
-airtable.egg-info/*
-build/*
-dist/*
+/airtable.egg-info/*
+/build/*
+/dist/*
+/AUTHORS
+/ChangeLog
