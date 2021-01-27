@@ -158,6 +158,8 @@ class Airtable(object):
             A dict for each record containing at least three fields: "id",
             "createdTime" and "fields".
         """
+        if fields is None:
+            fields = []
         offset = None
         while True:
             response = self.get(
