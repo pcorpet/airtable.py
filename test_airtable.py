@@ -1,6 +1,7 @@
 import airtable
 import mock
 import requests
+from typing import Any, Dict
 import unittest
 
 FAKE_TABLE_NAME = 'TableName'
@@ -267,6 +268,10 @@ class TestTableFromConfig(TestAirtable):
 
     def iterate(self, *args, **kwargs):
         return self.table.iterate(*args, **kwargs)
+
+
+# This line is here only to check that Python code supports having the Record used.
+_UnusedType = airtable.Record[Dict[str, Any]]
 
 
 if __name__ == '__main__':
