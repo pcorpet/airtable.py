@@ -2,6 +2,7 @@ import json
 import posixpath
 import requests
 import six
+from typing import Any, Generic, Mapping, TypeVar
 from collections import OrderedDict
 
 API_URL = 'https://api.airtable.com/v%s/'
@@ -36,6 +37,24 @@ def check_string(s):
 
 def create_payload(data):
     return {'fields': data}
+
+
+_T = TypeVar('_T', bound=Mapping[str, Any])
+
+
+class Record(Generic[_T]):
+
+    def __init__(self):
+        raise NotImplementedError(
+            'This class is only used as a type of records returned by this module, however '
+            'it should only be used as a type (see typing stubs) and not as an actual class.'
+        )
+
+    def __getitem__(self, key):
+        ...
+
+    def get(self, key, default=None):
+        ...
 
 
 class AirtableError(Exception):
