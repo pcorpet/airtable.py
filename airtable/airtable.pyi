@@ -38,6 +38,18 @@ class _AirtableRecord(Generic[_RecordType]):
     def __getitem__(self, key: Literal['fields']) -> _RecordType:
         ...
 
+    @overload
+    def get(self, key: Literal['createdTime'], default: Optional[str] = ...) -> str:
+        ...
+
+    @overload
+    def get(self, key: Literal['id'], default: Optional[str] = ...) -> str:
+        ...
+
+    @overload
+    def get(self, key: Literal['fields'], default: _RecordType = ...) -> _RecordType:
+        ...
+
 
 _DefaultRecordType = _AirtableRecord[_RecordType]
 

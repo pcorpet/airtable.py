@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Any, Mapping, TypedDict
 
 import airtable
 
@@ -15,8 +15,10 @@ records = at.get('TABLE_NAME')
 
 # Get the fields of a record.
 record = at.get('TABLE_NAME', 'recmlj')
-record['id']
-record['fields']
+record_id: str = record['id']
+record_fields: Mapping[str, Any] = record['fields']
+record_id = record.get('id')
+record.get('fields', {}).get('a')
 
 # Create a record.
 created = at.create('TABLE_NAME', {'a': 3})
