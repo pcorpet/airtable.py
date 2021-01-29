@@ -1,14 +1,23 @@
 language: python
 python:
-  - 2.7
-  - 3.9
+- 2.7
+- 3.9
 install:
-  - pip install -r requirements.txt
-  - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || pip install -r requirements-test.txt"
+- pip install -r requirements.txt
+- "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || pip install -r requirements-test.txt"
 script:
-  - python test_airtable.py
-  - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. stubtest airtable"
-  - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. mypy typetests"
+- python test_airtable.py
+- "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. stubtest airtable"
+- "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. mypy typetests"
 notifications:
   email:
-    - joseph@bestjames.com
+  - joseph@bestjames.com
+deploy:
+  provider: pypi
+  username: __token__
+  password:
+    secure: WAPXcNTTDDX+qfcIBgjltxOeICUtBE22XGqBEmyezZJKTmbLWHv3MTc24ZWvzrO2ghHnWPqOlExbHpp1Y4Uvtk7yFZq05yrrYUMFI6TuOccVtrGMxf3woWcPD/grVCeWj5ftFAYP2t3hCCh8fjymV8leszn4dvaHeZehbMynwGxu1hfriLMESF1p6H0uXijkCe/LomTT8L4cBku5hVNf9wQA1ZHgspMFV4p8YiIBuzQ0zce3DVmLiew2/zWTOPZC3VdBFIqRH2Ya+ScJGZWiMcecfeIWaW+F0sTedQY/wygK/67jnqdfL8p1qbBRJkm3vOdysgjR6RNuqoT9zMOz3+fI6ObtxSTd6ctm0TUx/eXuVj9zgoQDzfMo6LtD5tAJtJUrDIhwfeXFmeSUEQkAr85BuwAmATY8d2hQ6drYUDW5k5koBIEw1IJeX6Ps0ZiAEAxYtEPG5zhVM1qn4d0y8yQ9REbRtAJdkfgine1YOeTZDCS/5BHAV3x2MWw2A2yqkJaBISolQ6NwZObjuRJbMi9kTEUbw6nxibH/wQesEPs6OaMBAF9qsBhZ9NXGy5oRYaiWpFaTTi5cPhNrnM0fuzYX3nlJUlsP4f9rYxOOwS4H6gkKoIgicn2og0Bn+LfRvvrJl8UCxWjcmwBONxj41ksFGib5+tcq3wtBZ6fyHtg=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    branch: develop
