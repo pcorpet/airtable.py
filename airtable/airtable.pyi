@@ -20,12 +20,13 @@ def create_payload(data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     ...
 
 
-_RecordType = typing.TypeVar('_RecordType', bound=Mapping[str, Any])
+_RecordType = typing.TypeVar('_RecordType', bound=Mapping[str, Any], covariant=True)
+_InferRecordType = typing.TypeVar('_InferRecordType', bound=Mapping[str, Any])
 
 
 # TODO(pcorpet): Switch to use TypedDict, when https://github.com/python/mypy/issues/3863 is
 # implemented.
-class _AirtableRecord(Generic[_RecordType]):
+class Record(Generic[_RecordType]):
     @overload
     def __getitem__(self, key: Literal['id']) -> str:
         ...
@@ -47,11 +48,11 @@ class _AirtableRecord(Generic[_RecordType]):
         ...
 
     @overload
-    def get(self, key: Literal['fields'], default: _RecordType = ...) -> _RecordType:
+    def get(self, key: Literal['fields'], default: Mapping[str, Any] = ...) -> _RecordType:
         ...
 
 
-_DefaultRecordType = _AirtableRecord[_RecordType]
+_DefaultRecordType = Record[_RecordType]
 
 
 class _DeletedRecord(TypedDict):
@@ -86,7 +87,7 @@ class Table(Generic[_RecordType]):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Iterator[_AirtableRecord[_RecordType]]:
+            fields: Iterable[str] = ...) -> Iterator[Record[_RecordType]]:
         ...
 
     @overload
@@ -98,7 +99,7 @@ class Table(Generic[_RecordType]):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Dict[str, List[_AirtableRecord[_RecordType]]]:
+            fields: Iterable[str] = ...) -> Dict[str, List[Record[_RecordType]]]:
         ...
 
     @overload
@@ -111,20 +112,20 @@ class Table(Generic[_RecordType]):
             view: None = None,
             max_records: Literal[0] = 0,
             fields: Iterable[str] = ...) \
-            -> _AirtableRecord[_RecordType]:
+            -> Record[_RecordType]:
         ...
 
-    def create(self, data: Mapping[str, Any]) -> _AirtableRecord[_RecordType]:
+    def create(self, data: Mapping[str, Any]) -> Record[_RecordType]:
         ...
 
     def update(
             self, record_id: str,
-            data: Mapping[str, Any]) -> _AirtableRecord[_RecordType]:
+            data: Mapping[str, Any]) -> Record[_RecordType]:
         ...
 
     def update_all(
             self, record_id: str,
-            data: Mapping[str, Any]) -> _AirtableRecord[_RecordType]:
+            data: Mapping[str, Any]) -> Record[_RecordType]:
         ...
 
     def delete(self, record_id: str) -> _DeletedRecord:
@@ -177,15 +178,15 @@ class Airtable(object):
             -> _DefaultRecordType:
         ...
 
-    def create(self, table_name: str, data: _RecordType) -> _AirtableRecord[_RecordType]:
+    def create(self, table_name: str, data: _InferRecordType) -> Record[_InferRecordType]:
         ...
 
-    def update(self, table_name: str, record_id: str, data: _RecordType) \
-            -> _AirtableRecord[_RecordType]:
+    def update(self, table_name: str, record_id: str, data: _InferRecordType) \
+            -> Record[_InferRecordType]:
         ...
 
-    def update_all(self, table_name: str, record_id: str, data: _RecordType) \
-            -> _AirtableRecord[_RecordType]:
+    def update_all(self, table_name: str, record_id: str, data: _InferRecordType) \
+            -> Record[_InferRecordType]:
         ...
 
     def delete(self, table_name: str, record_id: str) -> _DefaultRecordType:

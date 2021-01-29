@@ -4,8 +4,11 @@ import airtable
 
 
 # Strongly typed fields.
-class MyFields(TypedDict):
+class NameFields(TypedDict):
     name: str
+
+
+class MyFields(NameFields):
     score: float
 
 
@@ -40,3 +43,6 @@ scores: airtable.Table[MyFields] = at.table('scores')
 name: str = scores.get('rec12341243')['fields']['name']
 score: float = scores.get('rec12341243')['fields']['score']
 scores.update('rec12341243', {'score': 4})
+
+# Ensure covariance.
+named_record: airtable.Record[NameFields] = scores.get('rec12341243')
