@@ -4,7 +4,8 @@ python:
 - 3.9
 install:
 - pip install -r requirements.txt
-- "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || pip install -r requirements-test.txt"
+- pip install -r requirements-test.txt
+- "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || pip install mypy"
 script:
 - python test_airtable.py
 - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. stubtest airtable"
