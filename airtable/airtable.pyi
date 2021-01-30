@@ -52,7 +52,7 @@ class Record(Generic[_RecordType]):
         ...
 
 
-_DefaultRecordType = Record[_RecordType]
+_DefaultRecordType = Record[Mapping[str, Any]]
 
 
 class _DeletedRecord(TypedDict):
