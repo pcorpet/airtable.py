@@ -269,6 +269,28 @@ class TestTableFromConfig(TestAirtable):
     def iterate(self, *args, **kwargs):
         return self.table.iterate(*args, **kwargs)
 
+    @mock.patch.object(requests, 'request')
+    def test_typed_table(self, mock_request):
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'records': [
+                {
+                    'id': 'reccA23fSERw5Zlp0',
+                    'fields': {
+                        'Name': 3,
+                        'Number': 4
+                    }
+                },
+            ],
+        }
+        mock_request.return_value = mock_response
+
+        table = airtable.Table[Dict[str, int]](
+            self.base_id, FAKE_TABLE_NAME, api_key=FAKE_API_KEY)
+        response = table.get()
+        self.assertEqual(response['records'][0]['fields'], {'Name': 3, 'Number': 4})
+
 
 # This line is here only to check that Python code supports having the Record used.
 _UnusedType = airtable.Record[Dict[str, Any]]

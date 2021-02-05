@@ -196,7 +196,7 @@ class Airtable(object):
         return Table(self, table_name)
 
 
-class Table(object):
+class Table(Generic[_T]):
     def __init__(self, base_id, table_name, api_key=None, dict_class=OrderedDict):
         """Create a client to connect to an Airtable Table.
 
