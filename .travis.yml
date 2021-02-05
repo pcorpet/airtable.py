@@ -22,3 +22,5 @@ deploy:
   on:
     tags: true
     python: 3.9
+    all_branches: true
+    repo: josephbestjames/airtable.py
