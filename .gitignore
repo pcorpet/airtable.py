@@ -7,3 +7,4 @@ venv
 /dist/*
 /AUTHORS
 /ChangeLog
+/.eggs
