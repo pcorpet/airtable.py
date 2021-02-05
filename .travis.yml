@@ -21,5 +21,4 @@ deploy:
   distributions: sdist bdist_wheel
   on:
     tags: true
-    branch: develop
-  skip_existing: true
+    python: 3.9
