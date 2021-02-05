@@ -22,3 +22,4 @@ deploy:
   on:
     tags: true
     branch: develop
+  skip_existing: true
