@@ -125,9 +125,12 @@ class Airtable(object):
                 params.update({'view': view})
             if max_records and check_integer(max_records):
                 params.update({'maxRecords': max_records})
-            if fields and type(fields) is list:
+            if fields and isinstance(fields, (list, tuple)):
                 for field in fields:
                     check_string(field)
+                # Duplicate a single field, https://github.com/josephbestjames/airtable.py/issues/47
+                if len(fields) == 1:
+                    fields = fields + fields
                 params.update({'fields': fields})
 
         return self.__request('GET', url, params)

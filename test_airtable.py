@@ -160,6 +160,19 @@ class TestAirtable(unittest.TestCase):
             params={'view': 'My view'})
 
     @mock.patch.object(requests, 'request')
+    def test_get_view(self, mock_request):
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {'records': []}
+        mock_request.return_value = mock_response
+
+        r = self.get(fields=['Name'])
+        mock_request.assert_called_once_with(
+            'GET', 'https://api.airtable.com/v0/app12345/TableName',
+            data=None, headers={'Authorization': 'Bearer fake_api_key'},
+            params={'fields': ['Name', 'Name']})
+
+    @mock.patch.object(requests, 'request')
     def test_get_filter_by_formula(self, mock_request):
         mock_response = mock.MagicMock()
         mock_response.status_code = 200

@@ -17,7 +17,7 @@ at = airtable.Airtable('BASE_ID', 'API_KEY')
 records = at.get('TABLE_NAME')
 
 # Get the fields of a record.
-record = at.get('TABLE_NAME', 'recmlj')
+record = at.get('TABLE_NAME', 'recmlj',  fields=['a'])
 record_id: str = record['id']
 record_fields: Mapping[str, Any] = record['fields']
 record_id = record.get('id')
