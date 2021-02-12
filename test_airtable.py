@@ -292,6 +292,13 @@ class TestTableFromConfig(TestAirtable):
         self.assertEqual(response['records'][0]['fields'], {'Name': 3, 'Number': 4})
 
 
+class TestNestedModule(TestAirtable):
+
+    def setUp(self):
+        super(TestNestedModule, self).setUp()
+        self.airtable = airtable.airtable.Airtable(self.base_id, self.api_key)
+
+
 # This line is here only to check that Python code supports having the Record used.
 _UnusedType = airtable.Record[Dict[str, Any]]
 
