@@ -10,6 +10,7 @@ script:
 - python test_airtable.py
 - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. stubtest airtable"
 - "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. mypy typetests --strict"
+- "[[ $TRAVIS_PYTHON_VERSION == 2.7 ]] || PYTHONPATH=. pylint airtable test_airtable.py --fail-under 6"
 notifications:
   email:
   - joseph@bestjames.com
