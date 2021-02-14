@@ -1,9 +1,11 @@
+from collections import OrderedDict
 import json
 import posixpath
+from typing import Any, Generic, Mapping, TypeVar
+import warnings
+
 import requests
 import six
-from typing import Any, Generic, Mapping, TypeVar
-from collections import OrderedDict
 
 API_URL = 'https://api.airtable.com/v%s/'
 API_VERSION = '0'
@@ -238,3 +240,39 @@ class Table(Generic[_T]):
 
     def delete(self, record_id):
         return self._client.delete(self.table_name, record_id)
+
+
+class _ProxyModule(object):
+
+    def _this(self):
+        warnings.warn(
+            'airtable.airtable is deprecated, import airtable directly.',
+            DeprecationWarning)
+        return __import__(__name__)
+
+    def __eq__(self, other):
+        return other is self or other is self._this()
+
+    def __str__(self):
+        return str(self._this())
+
+    def __repr__(self):
+        return repr(self._this())
+
+    def __dir__(self):
+        return dir(self._this())
+
+    def __getattr__(self, name):
+        if name == '__members__':
+            return dir(self._get_current_object())
+        return getattr(self._this(), name)
+
+    def __setattr__(self, name, value):
+        return setattr(self._this(), name, value)
+
+    def __delattr__(self, name):
+        return delattr(self._this(), name)
+
+
+# Access to this module through deprecated "import airtable from airtable".
+airtable = _ProxyModule()
