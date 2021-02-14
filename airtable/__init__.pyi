@@ -1,5 +1,5 @@
 import typing
-from typing import Any, Dict, Generic, Iterable, Iterator, List, Literal, Mapping, Optional, TypedDict, Union, overload
+from typing import Any, Dict, Generic, Iterable, Iterator, List, Literal, Mapping, Optional, Tuple, TypedDict, Union, overload
 
 API_URL: str
 API_VERSION: str
@@ -87,7 +87,7 @@ class Table(Generic[_RecordType]):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Iterator[Record[_RecordType]]:
+            fields: Union[List[str], Tuple[str]] = ...) -> Iterator[Record[_RecordType]]:
         ...
 
     @overload
@@ -99,7 +99,7 @@ class Table(Generic[_RecordType]):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Dict[str, List[Record[_RecordType]]]:
+            fields: Union[List[str], Tuple[str]] = ...) -> Dict[str, List[Record[_RecordType]]]:
         ...
 
     @overload
@@ -111,7 +111,7 @@ class Table(Generic[_RecordType]):
             filter_by_formula: None = None,
             view: None = None,
             max_records: Literal[0] = 0,
-            fields: Iterable[str] = ...) \
+            fields: Union[List[str], Tuple[str]] = ...) \
             -> Record[_RecordType]:
         ...
 
@@ -148,7 +148,7 @@ class Airtable(object):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Iterator[_DefaultRecordType]:
+            fields: Union[List[str], Tuple[str]] = ...) -> Iterator[_DefaultRecordType]:
         ...
 
     @overload
@@ -161,7 +161,7 @@ class Airtable(object):
             filter_by_formula: Optional[str] = None,
             view: Optional[str] = None,
             max_records: int = 0,
-            fields: Iterable[str] = ...) -> Dict[str, List[_DefaultRecordType]]:
+            fields: Union[List[str], Tuple[str]] = ...) -> Dict[str, List[_DefaultRecordType]]:
      ...
 
     @overload
@@ -174,7 +174,7 @@ class Airtable(object):
             filter_by_formula: None = None,
             view: None = None,
             max_records: Literal[0] = 0,
-            fields: Iterable[str] = ...) \
+            fields: Union[List[str], Tuple[str]] = ...) \
             -> _DefaultRecordType:
         ...
 
