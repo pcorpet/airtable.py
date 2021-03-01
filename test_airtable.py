@@ -153,20 +153,20 @@ class TestAirtable(unittest.TestCase):
         mock_response.json.return_value = {'records': []}
         mock_request.return_value = mock_response
 
-        r = self.get(view='My view')
+        self.get(view='My view')
         mock_request.assert_called_once_with(
             'GET', 'https://api.airtable.com/v0/app12345/TableName',
             data=None, headers={'Authorization': 'Bearer fake_api_key'},
             params={'view': 'My view'})
 
     @mock.patch.object(requests, 'request')
-    def test_get_view(self, mock_request):
+    def test_get_only_one_field(self, mock_request):
         mock_response = mock.MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {'records': []}
         mock_request.return_value = mock_response
 
-        r = self.get(fields=['Name'])
+        self.get(fields=['Name'])
         mock_request.assert_called_once_with(
             'GET', 'https://api.airtable.com/v0/app12345/TableName',
             data=None, headers={'Authorization': 'Bearer fake_api_key'},
@@ -179,7 +179,7 @@ class TestAirtable(unittest.TestCase):
         mock_response.json.return_value = {'records': []}
         mock_request.return_value = mock_response
 
-        r = self.get(filter_by_formula="{title} = ''")
+        self.get(filter_by_formula="{title} = ''")
         mock_request.assert_called_once_with(
             'GET', 'https://api.airtable.com/v0/app12345/TableName',
             data=None, headers={'Authorization': 'Bearer fake_api_key'},
