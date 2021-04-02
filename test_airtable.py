@@ -1,8 +1,10 @@
-import airtable
-import mock
-import requests
 from typing import Any, Dict
 import unittest
+
+import mock
+import requests
+
+import airtable
 
 FAKE_TABLE_NAME = 'TableName'
 FAKE_BASE_ID = 'app12345'
@@ -110,9 +112,9 @@ class TestAirtable(unittest.TestCase):
         mock_response.encoding = 'utf-8'
 
         mock_request.return_value = mock_response
-        r = self.airtable.get(FAKE_TABLE_NAME)
-        self.assertEqual(list(r['records'][0]['fields'].keys()), list(u'abcdefghijklm'))
-        self.assertEqual(list(r['records'][1]['fields'].keys()), list(u'nopqrstuvwxyz'))
+        response = self.airtable.get(FAKE_TABLE_NAME)
+        self.assertEqual(list(response['records'][0]['fields'].keys()), list(u'abcdefghijklm'))
+        self.assertEqual(list(response['records'][1]['fields'].keys()), list(u'nopqrstuvwxyz'))
 
     @mock.patch.object(requests, 'request')
     def test_get_by_id(self, mock_request):
@@ -127,8 +129,8 @@ class TestAirtable(unittest.TestCase):
             }
         }
         mock_request.return_value = mock_response
-        r = self.get(fake_id)
-        self.assertEqual(r['id'], fake_id)
+        response = self.get(fake_id)
+        self.assertEqual(response['id'], fake_id)
 
     @mock.patch.object(requests, 'request')
     def test_get_not_found(self, mock_request):
@@ -201,9 +203,9 @@ class TestAirtable(unittest.TestCase):
             'id': '1234'
         }
         mock_request.return_value = mock_response
-        r = self.delete('1234')
-        self.assertTrue(r['deleted'])
-        self.assertEqual(r['id'], '1234')
+        response = self.delete('1234')
+        self.assertTrue(response['deleted'])
+        self.assertEqual(response['id'], '1234')
 
     def test_invalid_delete(self):
         with self.assertRaises(airtable.IsNotString):

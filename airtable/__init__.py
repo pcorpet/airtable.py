@@ -19,22 +19,20 @@ class IsNotString(Exception):
     pass
 
 
-def check_integer(n):
-    if not n:
+def check_integer(integer):
+    if not integer:
         return False
-    elif not isinstance(n, six.integer_types):
-        raise IsNotInteger('Expected an integer', n)
-    else:
-        return True
+    if not isinstance(integer, six.integer_types):
+        raise IsNotInteger('Expected an integer', integer)
+    return True
 
 
-def check_string(s):
-    if not s:
+def check_string(string):
+    if not string:
         return False
-    elif not isinstance(s, six.string_types):
-        raise IsNotString('Expected a string', s)
-    else:
-        return True
+    if not isinstance(string, six.string_types):
+        raise IsNotString('Expected a string', string)
+    return True
 
 
 def create_payload(data):
@@ -55,7 +53,7 @@ class Record(Generic[_T]):
     def __getitem__(self, key):
         pass
 
-    def get(self, key, default=None):
+    def get(self, key, default=None):  # pylint-disable=invalid-name
         pass
 
 
@@ -96,22 +94,22 @@ class Airtable(object):
     def __request(self, method, url, params=None, payload=None):
         if method in ['POST', 'PUT', 'PATCH']:
             self.headers.update({'Content-type': 'application/json'})
-        r = requests.request(method,
-                             posixpath.join(self.base_url, url),
-                             params=params,
-                             data=payload,
-                             headers=self.headers)
-        if r.status_code == requests.codes.ok:
-            return r.json(object_pairs_hook=self._dict_class)
-        else:
-            error_json = r.json().get('error', {})
-            raise AirtableError(
-                error_type=error_json.get('type', str(r.status_code)),
-                message=error_json.get('message', json.dumps(r.json())))
+        response = requests.request(
+            method,
+            posixpath.join(self.base_url, url),
+            params=params,
+            data=payload,
+            headers=self.headers)
+        if response.status_code == requests.codes.ok:
+            return response.json(object_pairs_hook=self._dict_class)
+        error_json = response.json().get('error', {})
+        raise AirtableError(
+            error_type=error_json.get('type', str(response.status_code)),
+            message=error_json.get('message', json.dumps(response.json())))
 
-    def get(
+    def get(  # pylint: disable=invalid-name
             self, table_name, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None, max_records=0, fields=[]):
+            filter_by_formula=None, view=None, max_records=0, fields=None):
         params = {}
         if check_string(record_id):
             url = posixpath.join(table_name, record_id)
@@ -139,7 +137,7 @@ class Airtable(object):
 
     def iterate(
             self, table_name, batch_size=0, filter_by_formula=None,
-            view=None, max_records=0, fields=[]):
+            view=None, max_records=0, fields=None):
         """Iterate over all records of a table.
 
         Args:
@@ -173,29 +171,26 @@ class Airtable(object):
                 break
 
     def create(self, table_name, data):
-        if check_string(table_name):
-            payload = create_payload(data)
-            return self.__request('POST', table_name,
-                                  payload=json.dumps(payload))
+        assert check_string(table_name)
+        payload = create_payload(data)
+        return self.__request('POST', table_name, payload=json.dumps(payload))
 
     def update(self, table_name, record_id, data):
-        if check_string(table_name) and check_string(record_id):
-            url = posixpath.join(table_name, record_id)
-            payload = create_payload(data)
-            return self.__request('PATCH', url,
-                                  payload=json.dumps(payload))
+        assert check_string(table_name) and check_string(record_id)
+        url = posixpath.join(table_name, record_id)
+        payload = create_payload(data)
+        return self.__request('PATCH', url, payload=json.dumps(payload))
 
     def update_all(self, table_name, record_id, data):
-        if check_string(table_name) and check_string(record_id):
-            url = posixpath.join(table_name, record_id)
-            payload = create_payload(data)
-            return self.__request('PUT', url,
-                                  payload=json.dumps(payload))
+        assert check_string(table_name) and check_string(record_id)
+        url = posixpath.join(table_name, record_id)
+        payload = create_payload(data)
+        return self.__request('PUT', url, payload=json.dumps(payload))
 
     def delete(self, table_name, record_id):
-        if check_string(table_name) and check_string(record_id):
-            url = posixpath.join(table_name, record_id)
-            return self.__request('DELETE', url)
+        assert check_string(table_name) and check_string(record_id)
+        url = posixpath.join(table_name, record_id)
+        return self.__request('DELETE', url)
 
     def table(self, table_name):
         return Table(self, table_name)
@@ -220,15 +215,15 @@ class Table(Generic[_T]):
             return
         self._client = Airtable(base_id, api_key, dict_class=dict_class)
 
-    def get(
+    def get(  # pylint:disable=invalid-name
             self, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None, max_records=0, fields=[]):
+            filter_by_formula=None, view=None, max_records=0, fields=None):
         return self._client.get(
             self.table_name, record_id, limit, offset, filter_by_formula, view, max_records, fields)
 
     def iterate(
             self, batch_size=0, filter_by_formula=None,
-            view=None, max_records=0, fields=[]):
+            view=None, max_records=0, fields=None):
         return self._client.iterate(
             self.table_name, batch_size, filter_by_formula, view, max_records, fields)
 
