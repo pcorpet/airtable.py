@@ -5,6 +5,7 @@ from typing import Any, Generic, Mapping, TypeVar
 import warnings
 
 import requests
+from requests.packages.urllib3.util.retry import Retry
 import six
 
 API_URL = 'https://api.airtable.com/v%s/'
@@ -91,10 +92,15 @@ class Airtable(object):
         self.headers = {'Authorization': 'Bearer %s' % api_key}
         self._dict_class = dict_class
 
+    
+
     def __request(self, method, url, params=None, payload=None):
         if method in ['POST', 'PUT', 'PATCH']:
             self.headers.update({'Content-type': 'application/json'})
-        response = requests.request(
+        retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+        session = requests.Session()
+        session.mount('https://', requests.adapters.HTTPAdapter(max_retries=retries))
+        response = session.request(
             method,
             posixpath.join(self.base_url, url),
             params=params,

@@ -8,3 +8,4 @@ venv
 /AUTHORS
 /ChangeLog
 /.eggs
+/.vscode

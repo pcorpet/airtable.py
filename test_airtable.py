@@ -2,8 +2,9 @@ from typing import Any, Dict
 import unittest
 
 import requests_mock
-
+import httpretty
 import airtable
+import re
 
 FAKE_TABLE_NAME = 'TableName'
 FAKE_BASE_ID = 'app12345'
@@ -32,6 +33,31 @@ class TestAirtable(unittest.TestCase):
     def test_build_headers(self):
         self.assertEqual(self.airtable.headers['Authorization'],
                          'Bearer fake_api_key')
+
+    @httpretty.activate
+    def test_retries(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile(r'https://.*'),
+            responses=[
+                httpretty.Response(
+                    body='{}',
+                    status=429,
+                ),
+                httpretty.Response(
+                    body='{}',
+                    status=500,
+                ),
+                 httpretty.Response(
+                    body='{}',
+                    status=200,
+                ),
+            ]
+        )
+        
+        self.get()
+        self.assertEqual(3, len(httpretty.latest_requests()))
+       
 
     @requests_mock.mock()
     def test_get_all(self, mock_requests):
