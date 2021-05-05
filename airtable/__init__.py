@@ -91,7 +91,7 @@ class Airtable(object):
         self.base_url = posixpath.join(self.airtable_url, base_id)
         self.headers = {'Authorization': 'Bearer %s' % api_key}
         self._dict_class = dict_class
-    
+
     def __request(self, method, url, params=None, payload=None):
         if method in ['POST', 'PUT', 'PATCH']:
             self.headers.update({'Content-type': 'application/json'})
