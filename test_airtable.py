@@ -1,5 +1,6 @@
 from typing import Any, Dict
 import unittest
+import json
 
 import requests_mock
 import httpretty
@@ -49,15 +50,27 @@ class TestAirtable(unittest.TestCase):
                     status=500,
                 ),
                  httpretty.Response(
-                    body='{}',
+                    body=json.dumps({
+                        'records': [
+                            {
+                                'id': 'reccA6yaHKzw5Zlp0',
+                                'fields': {
+                                    'Name': 'John',
+                                    'Number': '(987) 654-3210'
+                                }
+                            }
+                        ],
+                        'offset': 'reccg3Kke0QvTDW0H'
+                    }),
                     status=200,
                 ),
             ]
         )
         
-        self.get()
+        res = self.get()
         self.assertEqual(3, len(httpretty.latest_requests()))
-       
+        self.assertEqual(len(res['records']), 1)
+        self.assertEqual(res['offset'], 'reccg3Kke0QvTDW0H')
 
     @requests_mock.mock()
     def test_get_all(self, mock_requests):
