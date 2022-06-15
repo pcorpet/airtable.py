@@ -109,7 +109,7 @@ class Airtable(object):
 
     def get(  # pylint: disable=invalid-name
             self, table_name, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None, max_records=0, fields=None):
+            filter_by_formula=None, view=None, max_records=0, fields=None, sort=None):
         params = {}
         if check_string(record_id):
             url = posixpath.join(table_name, record_id)
@@ -132,7 +132,12 @@ class Airtable(object):
                 if len(fields) == 1:
                     fields = fields + fields
                 params.update({'fields': fields})
-
+            if sort and isinstance(sort, dict):
+                idx=0
+                for field, direction in sort.items():
+                    params.update({f'sort[{idx}][field]': field})
+                    params.update({f'sort[{idx}][direction]': direction})
+                    idx += 1
         return self.__request('GET', url, params)
 
     def iterate(
