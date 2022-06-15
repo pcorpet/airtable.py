@@ -109,7 +109,8 @@ class Airtable(object):
 
     def get(  # pylint: disable=invalid-name
             self, table_name, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None, max_records=0, fields=None, sort=None):
+            filter_by_formula=None, view=None, max_records=0, fields=None,
+            sort=None):
         params = {}
         if check_string(record_id):
             url = posixpath.join(table_name, record_id)
@@ -142,7 +143,8 @@ class Airtable(object):
 
     def iterate(
             self, table_name, batch_size=0, filter_by_formula=None,
-            view=None, max_records=0, fields=None):
+            view=None, max_records=0, fields=None,
+            sort=None):
         """Iterate over all records of a table.
 
         Args:
@@ -167,7 +169,7 @@ class Airtable(object):
         while True:
             response = self.get(
                 table_name, limit=batch_size, offset=offset, max_records=max_records,
-                fields=fields, filter_by_formula=filter_by_formula, view=view)
+                fields=fields, filter_by_formula=filter_by_formula, view=view, sort=sort)
             for record in response.pop('records'):
                 yield record
             if 'offset' in response:
