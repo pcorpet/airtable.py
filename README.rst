@@ -80,7 +80,7 @@ where
     filter_by_formula (optional) is a string to filter the retrieving records (see filterByFormula in the AirTable documentation)
     max_records (optional) is the total number of records that will be returned (see maxRecords in the AirTable documentation)
     fields (optional) is a list of strings with the field names to be returned
-    sort (option) is a dictionary of field names and directions, such as: {'publish_date': 'desc'}
+    sort (optional) is a dictionary of field names and directions, such as: {'publish_date': 'desc'}
 
 Iterate
 ~~~~~~~
@@ -103,7 +103,7 @@ where
     filter_by_formula (optional) is a string to filter the retrieving records (see filterByFormula in the AirTable documentation)
     max_records (optional) is the total number of records that will be returned (see maxRecords in the AirTable documentation)
     fields (optional) is a list of strings with the field names to be returned
-    sort (option) is a dictionary of field names and directions, such as: {'publish_date': 'desc'}
+    sort (optional) is a dictionary of field names and directions, such as: {'publish_date': 'desc'}
 
 **Note**: this returns a generator instead, which you can use to loop
 each record:
