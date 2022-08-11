@@ -55,7 +55,7 @@ Here's an example of response from the Restaurant's example base
 API Reference
 -------------
 
-The available methods closely mimick the `REST
+The available methods closely mimic the `REST
 API <https://airtable.com/api>`__:
 
 Get
@@ -87,17 +87,18 @@ Given a table name, fetched all records.
 
 .. code:: python
 
-    at.iterate(table_name, table_name, limit=0, offset=None,
-           filter_by_formula=None, view=None, max_records=0, fields=[])
+    at.iterate(table_name, batch_size=0, filter_by_formula=None,
+           view=None, max_records=0, fields=[])
 
 where
 
 ::
 
     table_name (required) is a string representing the table name
+    batch_size (optional) is an integer specifying the number of records to fetch per request. The default (0) uses the API default, which is (as of 2016-09) 100.
     limit (optional) is an integer, and it can only be specified if record_id is not present, and limits the number of items fetched (see pageSize in the AirTable documentation)
-    offset is a string representing the record id from which we start the offset
     filter_by_formula (optional) is a string to filter the retrieving records (see filterByFormula in the AirTable documentation)
+    view  (optional) is a string representing the name or ID of a view in the table. If set, only the records in that view will be returned. The records will be sorted according to the order of the view.
     max_records (optional) is the total number of records that will be returned (see maxRecords in the AirTable documentation)
     fields (optional) is a list of strings with the field names to be returned
 
@@ -126,13 +127,13 @@ where
 ::
 
     table_name (required) is a string representing the table name
-    data (required) is a dictionary containing the fields and the resepective values
+    data (required) is a dictionary containing the fields and the respective values
 
 Update
 ~~~~~~
 
 Updates *some* fields in a specific entry in the table. Fields which are
-not explicitely included will not get updated
+not explicitly included will not get updated
 
 .. code:: python
 
@@ -144,7 +145,7 @@ where
 
     table_name (required) is a string representing the table name
     record_id (required) is a string representing the item to update
-    data (required) is a dictionary containing the fields (and the resepective values) to be updated
+    data (required) is a dictionary containing the fields (and the respective values) to be updated
 
 Update All
 ~~~~~~~~~~
@@ -178,5 +179,4 @@ where
 Release
 -------
 
-To release, tag the Git repo with a new version number, push that tag to GitHub then Travis CI will
-do the rest.
+To release, tag the Git repo with a new version number, push that tag to GitHub then Travis CI will do the rest.
