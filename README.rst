@@ -65,7 +65,7 @@ Given a table name, fetched one or multiple records.
 
 .. code:: python
 
-    at.get(table_name, table_name, record_id=None, limit=0, offset=None,
+    at.get(table_name, record_id=None, limit=0, offset=None,
            filter_by_formula=None, view=None, max_records=0, fields=[])
 
 where
