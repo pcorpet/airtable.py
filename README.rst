@@ -27,7 +27,7 @@ Airtable Python.
 .. code:: python
 
     import airtable
-    at = airtable.Airtable('BASE_ID', 'API_KEY')
+    at = airtable.Airtable('BASE_ID', 'ACCESS_TOKEN')
     at.get('TABLE_NAME')
 
 Here's an example of response from the Restaurant's example base
