@@ -65,8 +65,10 @@ Given a table name, fetched one or multiple records.
 
 .. code:: python
 
+
     at.get(table_name, record_id=None, limit=0, offset=None,
-           filter_by_formula=None, view=None, max_records=0, fields=[])
+           filter_by_formula=None, view=None, max_records=0, fields=[],
+           sort={})
 
 where
 
@@ -79,6 +81,7 @@ where
     filter_by_formula (optional) is a string to filter the retrieving records (see filterByFormula in the AirTable documentation)
     max_records (optional) is the total number of records that will be returned (see maxRecords in the AirTable documentation)
     fields (optional) is a list of strings with the field names to be returned
+    sort (optional) is a dictionary of field names and directions, such as: {'publish_date': 'desc'}
 
 Iterate
 ~~~~~~~
@@ -87,8 +90,10 @@ Given a table name, fetched all records.
 
 .. code:: python
 
-    at.iterate(table_name, batch_size=0, filter_by_formula=None,
-           view=None, max_records=0, fields=[])
+
+    at.iterate(table_name, limit=0, offset=None,
+           filter_by_formula=None, view=None, max_records=0, fields=[],
+           sort={})
 
 where
 
@@ -101,6 +106,7 @@ where
     view  (optional) is a string representing the name or ID of a view in the table. If set, only the records in that view will be returned. The records will be sorted according to the order of the view.
     max_records (optional) is the total number of records that will be returned (see maxRecords in the AirTable documentation)
     fields (optional) is a list of strings with the field names to be returned
+    sort (optional) is a dictionary of field names and directions, such as: {'publish_date': 'desc'}
 
 **Note**: this returns a generator instead, which you can use to loop
 each record:
