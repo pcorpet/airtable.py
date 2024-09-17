@@ -102,10 +102,21 @@ class Airtable(object):
             headers=self.headers)
         if response.status_code == requests.codes.ok:
             return response.json(object_pairs_hook=self._dict_class)
-        error_json = response.json().get('error', {})
-        raise AirtableError(
-            error_type=error_json.get('type', str(response.status_code)),
-            message=error_json.get('message', json.dumps(response.json())))
+        error_json = r.json().get('error', {})
+            if isinstance(error_json, dict):
+                error_type = error_json.get('type', str(r.status_code))
+                message = error_json.get('message', json.dumps(r.json()))
+            elif isinstance(error_json, str):
+                error_type = str(r.status_code)
+                message = error_json
+            else:
+                error_type = str(r.status_code)
+                message = json.dumps(r.json())
+
+            raise AirtableError(
+                error_type=error_type,
+                message=message
+            )
 
     def get(  # pylint: disable=invalid-name
             self, table_name, record_id=None, limit=0, offset=None,
