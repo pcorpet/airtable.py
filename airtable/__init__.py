@@ -1,8 +1,8 @@
-from collections import OrderedDict
 import json
 import posixpath
-from typing import Any, Generic, Mapping, TypeVar
 import warnings
+from collections import OrderedDict
+from typing import Any, Generic, Mapping, TypeVar
 
 import requests
 import six
@@ -134,11 +134,9 @@ class Airtable(object):
                     fields = fields + fields
                 params.update({'fields': fields})
             if sort and isinstance(sort, dict):
-                idx=0
-                for field, direction in sort.items():
+                for idx, (field, direction) in enumerate(sort.items()):
                     params.update({f'sort[{idx}][field]': field})
                     params.update({f'sort[{idx}][direction]': direction})
-                    idx += 1
         return self.__request('GET', url, params)
 
     def iterate(
